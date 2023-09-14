@@ -1,6 +1,6 @@
-# Turborepo starter
+# Ionic Migrate
 
-This is an official starter Turborepo.
+This is a migration utility for Ionic Framework projects.
 
 ## Using this example
 
