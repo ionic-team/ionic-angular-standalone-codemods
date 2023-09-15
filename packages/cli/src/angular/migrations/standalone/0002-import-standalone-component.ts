@@ -3,13 +3,14 @@ import { CliOptions } from "../../../types/cli-options";
 
 // @ts-ignore
 import { parse } from '@angular-eslint/template-parser';
-import { getDecoratorArgument, insertIntoDecoratorArgArray } from "../../utils/decorator-utils";
+import { getDecoratorArgument } from "../../utils/decorator-utils";
 
 import * as p from '@clack/prompts';
 import { addImportToComponentDecorator, addImportToNgModuleDecorator, findComponentTypescriptFileForTemplateFile, findNgModuleClassForComponent, getAngularComponentDecorator, isAngularComponentClass, isAngularComponentStandalone } from "../../utils/angular-utils";
 import { IONIC_COMPONENTS } from "../../utils/ionic-utils";
 import { toCamelCase, toPascalCase } from "../../utils/string-utils";
 import { addImportToClass, getOrCreateConstructor } from "../../utils/typescript-utils";
+import { saveFileChanges } from "../../utils/log-utils";
 
 
 export const parseAngularComponentTemplates = (directory: string, cliOptions: CliOptions) => {
@@ -23,47 +24,33 @@ export const parseAngularComponentTemplates = (directory: string, cliOptions: Cl
     if (sourceFile.getFilePath().endsWith('.html')) {
       const htmlAsString = sourceFile.getFullText();
 
-      const { skippedIconsHtml, hasIonIcon, ionIcons, ionicComponents } = detectIonicComponentsAndIcons(htmlAsString, sourceFile.getFilePath());
+      const { skippedIconsHtml, ionIcons, ionicComponents } = detectIonicComponentsAndIcons(htmlAsString, sourceFile.getFilePath());
 
-      if (hasIonIcon || ionicComponents.length > 0) {
+      if (ionicComponents.length > 0 || ionIcons.length > 0) {
         const tsSourceFile = findComponentTypescriptFileForTemplateFile(sourceFile);
 
         if (tsSourceFile) {
-          migrateAngularComponentClass(tsSourceFile, ionicComponents, ionIcons, hasIonIcon, skippedIconsHtml);
+          migrateAngularComponentClass(tsSourceFile, ionicComponents, ionIcons, skippedIconsHtml, cliOptions);
 
-          if (ionicComponents.length > 0 || hasIonIcon) {
-            if (cliOptions.dryRun) {
-              p.log.info('[Dry Run] Writing changes to: ' + tsSourceFile.getFilePath());
-              p.log.info(tsSourceFile.getFullText());
-            } else {
-              tsSourceFile.saveSync();
-            }
-          }
+          saveFileChanges(tsSourceFile, cliOptions);
         }
       }
     } else if (sourceFile.getFilePath().endsWith('.ts')) {
       const templateAsString = getComponentTemplateAsString(sourceFile);
       if (templateAsString) {
-        const { skippedIconsHtml, hasIonIcon, ionIcons, ionicComponents } = detectIonicComponentsAndIcons(templateAsString, sourceFile.getFilePath());
+        const { skippedIconsHtml, ionIcons, ionicComponents } = detectIonicComponentsAndIcons(templateAsString, sourceFile.getFilePath());
 
-        migrateAngularComponentClass(sourceFile, ionicComponents, ionIcons, hasIonIcon, skippedIconsHtml);
+        migrateAngularComponentClass(sourceFile, ionicComponents, ionIcons, skippedIconsHtml, cliOptions);
 
-        if (ionicComponents.length > 0 || hasIonIcon) {
-          if (cliOptions.dryRun) {
-            p.log.info('[Dry Run] Writing changes to: ' + sourceFile.getFilePath());
-            p.log.info(sourceFile.getFullText());
-          } else {
-            sourceFile.saveSync();
-          }
+        if (ionicComponents.length > 0 || ionIcons.length > 0) {
+          saveFileChanges(sourceFile, cliOptions);
         }
-
       }
     }
   }
-
 }
 
-function migrateAngularComponentClass(sourceFile: SourceFile, ionicComponents: string[], ionIcons: string[], hasIonIcon: boolean, skippedIconsHtml: string[]) {
+function migrateAngularComponentClass(sourceFile: SourceFile, ionicComponents: string[], ionIcons: string[], skippedIconsHtml: string[], cliOptions: CliOptions) {
   let ngModuleSourceFile: SourceFile | undefined;
   let modifiedNgModule = false;
 
@@ -71,16 +58,9 @@ function migrateAngularComponentClass(sourceFile: SourceFile, ionicComponents: s
     ngModuleSourceFile = findNgModuleClassForComponent(sourceFile);
   }
 
-  if (hasIonIcon) {
-    if (isAngularComponentStandalone(sourceFile)) {
-      addImportToClass(sourceFile, 'IonIcon', '@ionic/angular/standalone');
-      addImportToComponentDecorator(sourceFile, 'IonIcon');
-    } else if (ngModuleSourceFile) {
-      addImportToClass(ngModuleSourceFile, 'IonIcon', '@ionic/angular/standalone');
-      addImportToNgModuleDecorator(ngModuleSourceFile, 'IonIcon');
-      modifiedNgModule = true;
-    }
+  const hasIcons = ionIcons.length > 0;
 
+  if (hasIcons) {
     addImportToClass(sourceFile, 'addIcons', 'ionicons');
 
     for (const ionIcon of ionIcons) {
@@ -107,7 +87,6 @@ function migrateAngularComponentClass(sourceFile: SourceFile, ionicComponents: s
   }
 
   if (skippedIconsHtml.length > 0) {
-
     p.log.warning('--------------------------------------------------');
     p.log.warning(`Dynamic ion-icon name detected in component template: ${sourceFile.getFilePath()}`);
     p.log.warning(`Ionic is unable to automatically migrate these icons.`);
@@ -121,9 +100,7 @@ function migrateAngularComponentClass(sourceFile: SourceFile, ionicComponents: s
   }
 
   if (modifiedNgModule && ngModuleSourceFile) {
-    p.log.info('[Ionic Dev] Writing changes to: ' + ngModuleSourceFile.getFilePath());
-    p.log.info(ngModuleSourceFile.getFullText());
-    // ngModuleSourceFile?.saveSync();
+    saveFileChanges(ngModuleSourceFile, cliOptions);
   }
 }
 
@@ -137,8 +114,6 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
   const nodes = ast.templateNodes;
 
   const ionicComponents: string[] = [];
-
-  let hasIonIcon = false;
   const ionIcons: string[] = [];
   const skippedIconsHtml: string[] = [];
 
@@ -152,12 +127,11 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
       }
 
       if (node.name === 'ion-icon') {
-        hasIonIcon = true;
-
+        // TODO need to check for <ion-icon icon="user"></ion-icon as well.
         const staticNameAttribute = node.attributes.find((a: any) => a.name === 'name');
 
         if (staticNameAttribute) {
-          const iconName = staticNameAttribute.value; // "{{ 'user'}}"
+          const iconName = staticNameAttribute.value;
           if (!ionIcons.includes(iconName)) {
             ionIcons.push(iconName);
           }
@@ -165,13 +139,26 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
           const boundNameAttribute = node.inputs.find((a: any) => a.name === 'name');
 
           if (boundNameAttribute) {
-            // IonIcon name is a calculated value from a variable or function.
-            // We can't determine the value of the name at this time.
-            // The developer will need to manually import these icons.
-
             const skippedIcon = node.sourceSpan.toString();
 
-            skippedIconsHtml.push(skippedIcon);
+            const iconNameRegex = /{{\s*'([^']+)'\s*}}/;
+            /**
+             * Attempt to find the icon name from the bound name attribute
+             * when the developer has a template like this:
+             * <ion-icon name="'user'"></ion-icon>
+             */
+            const iconNameMatch = skippedIcon.match(iconNameRegex);
+
+            if (iconNameMatch) {
+              if (!ionIcons.includes(iconNameMatch[1])) {
+                ionIcons.push(iconNameMatch[1]);
+              }
+            } else {
+              // IonIcon name is a calculated value from a variable or function.
+              // We can't determine the value of the name at this time.
+              // The developer will need to manually import these icons.
+              skippedIconsHtml.push(skippedIcon);
+            }
           }
         }
       }
@@ -191,7 +178,6 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
   return {
     ionicComponents,
     ionIcons,
-    hasIonIcon,
     skippedIconsHtml
   }
 }

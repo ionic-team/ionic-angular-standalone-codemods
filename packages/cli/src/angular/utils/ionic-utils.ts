@@ -32,6 +32,7 @@ export const IONIC_COMPONENTS = [
   'ion-footer',
   'ion-grid',
   'ion-header',
+  'ion-icon',
   'ion-img',
   'ion-infinite-scroll',
   'ion-infinite-scroll-content',
