@@ -4,7 +4,9 @@
   "dependencies": {
     "@clack/core": "^0.3.3",
     "@clack/prompts": "^0.7.0",
-    "picocolors": "^1.0.0"
+    "picocolors": "^1.0.0",
+    "@angular-eslint/template-parser": "^16.1.2",
+    "ts-morph": "^19.0.0"
   },
   "bin": "./dist/index.js",
   "scripts": {
@@ -13,11 +15,11 @@
     "watch": "pnpm run build --watch"
   },
   "devDependencies": {
+    "eslint": "^8.0.0",
     "jiti": "^1.20.0",
     "typescript": "^4.3.5",
     "@types/node": "^18.0.0",
-    "tsup": "^7.2.0",
-    "ts-morph": "^19.0.0"
+    "tsup": "^7.2.0"
   },
   "engines": {
     "node": ">=18"

@@ -31,7 +31,11 @@ async function main() {
 
   p.log.info(`Migrating project at ${dir}`)
 
-  runStandaloneMigration(project, cli);
+  runStandaloneMigration({
+    project,
+    cliOptions: cli,
+    directory: dir
+  });
 
   p.outro('Migration complete!');
 
