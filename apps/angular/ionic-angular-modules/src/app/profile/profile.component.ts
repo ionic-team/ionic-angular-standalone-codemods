@@ -12,6 +12,7 @@ import { Component } from "@angular/core";
       <ion-list>
         <ion-item>
           <ion-icon slot="start" name="user"></ion-icon>
+          <ion-icon slot="start" name="{{ 'user' }}"></ion-icon>
           <ion-label>Username</ion-label>
           <ion-input></ion-input>
         </ion-item>
