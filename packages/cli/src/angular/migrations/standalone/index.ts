@@ -10,16 +10,14 @@ interface StandaloneMigrationOptions {
   directory: string;
 }
 
-export const runStandaloneMigration = ({
+export const runStandaloneMigration = async ({
   project,
   cliOptions,
   directory
 }: StandaloneMigrationOptions) => {
-  // migrateAppModule(project, cliOptions);
+  await migrateAppModule(project, cliOptions);
 
+  await parseAngularComponentTemplates(directory, cliOptions);
 
-  parseAngularComponentTemplates(directory, cliOptions);
-  // This should happen as the last migration.
-  // Otherwise we won't be able to tell if the migration has already been run.
-  // migrateImportStatements(project, cliOptions);
+  await migrateImportStatements(project, cliOptions);
 };

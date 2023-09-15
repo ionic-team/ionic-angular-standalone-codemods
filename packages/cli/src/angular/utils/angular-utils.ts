@@ -1,5 +1,5 @@
 import { SyntaxKind, type SourceFile, ts } from "ts-morph";
-import { getDecoratorArgument, insertIntoDecoratorArgArray } from "./decorator-utils";
+import { deleteFromDecoratorArgArray, getDecoratorArgument, insertIntoDecoratorArgArray } from "./decorator-utils";
 
 
 /**
@@ -111,6 +111,14 @@ export const addImportToNgModuleDecorator = (sourceFile: SourceFile, importName:
 
   if (ngModuleDecorator) {
     insertIntoDecoratorArgArray(ngModuleDecorator, 'imports', importName);
+  }
+}
+
+export const removeImportFromNgModuleDecorator = (sourceFile: SourceFile, importName: string) => {
+  const ngModuleDecorator = getAngularNgModuleDecorator(sourceFile);
+
+  if (ngModuleDecorator) {
+    deleteFromDecoratorArgArray(ngModuleDecorator, 'imports', importName);
   }
 }
 

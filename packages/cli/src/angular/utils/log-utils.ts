@@ -3,11 +3,12 @@ import type { CliOptions } from "../../types/cli-options";
 
 import * as p from '@clack/prompts';
 
-export function saveFileChanges(sourceFile: SourceFile, cliOptions: CliOptions) {
+export function saveFileChanges(sourceFile: SourceFile, cliOptions: CliOptions): Promise<void> {
   if (cliOptions.dryRun) {
     p.log.info('[Dry Run] Writing changes to: ' + sourceFile.getFilePath());
     p.log.info(sourceFile.getFullText());
+    return Promise.resolve();
   } else {
-    sourceFile.saveSync();
+    return sourceFile.save();
   }
 }

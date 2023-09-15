@@ -30,3 +30,18 @@ export const insertIntoDecoratorArgArray = (decorator: Decorator, propertyName: 
 
   propertyInitializer.addElement(value);
 };
+
+export const deleteFromDecoratorArgArray = (decorator: Decorator, propertyName: string, value: string) => {
+  const property = getDecoratorArgument(decorator, propertyName);
+  if (!property) {
+    return;
+  }
+
+  const propertyInitializer = property.getInitializerIfKind(SyntaxKind.ArrayLiteralExpression)!;
+
+  const element = propertyInitializer.getElements().find(e => e.getText() === value);
+
+  if (element) {
+    propertyInitializer.removeElement(element);
+  }
+}

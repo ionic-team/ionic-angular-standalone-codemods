@@ -3,11 +3,12 @@
 import type { Project } from "ts-morph";
 import type { CliOptions } from "../../../types/cli-options";
 
-import * as p from '@clack/prompts';
+import { saveFileChanges } from "../../utils/log-utils";
+import { removeImportFromNgModuleDecorator } from "../../utils/angular-utils";
 
-export const migrateImportStatements = (project: Project, cliOptions: CliOptions) => {
+export const migrateImportStatements = async (project: Project, cliOptions: CliOptions) => {
   // Get all typescript source files in the project and update any @ionic/angular imports to @ionic/angular/standalone
-  project.getSourceFiles().forEach(sourceFile => {
+  for (const sourceFile of project.getSourceFiles()) {
     let hasChanges = false;
 
     const importDeclarations = sourceFile.getImportDeclarations();
@@ -15,18 +16,27 @@ export const migrateImportStatements = (project: Project, cliOptions: CliOptions
       const moduleSpecifier = importDeclaration.getModuleSpecifierValue();
       if (moduleSpecifier === '@ionic/angular') {
         importDeclaration.setModuleSpecifier('@ionic/angular/standalone');
+
+        const namedImports = importDeclaration.getNamedImports();
+        const importSpecifier = namedImports.find(n => n.getName() === 'IonicModule');
+
+        if (importSpecifier) {
+          if (namedImports.length > 1) {
+            // Remove the IonicModule import specifier.
+            importSpecifier.remove();
+          } else {
+            // If this is the only import specifier, remove the entire import declaration.
+            importDeclaration.remove();
+          }
+          removeImportFromNgModuleDecorator(sourceFile, 'IonicModule');
+        }
+
         hasChanges = true;
       }
     });
 
     if (hasChanges) {
-      if (cliOptions.dryRun) {
-        p.log.info(`[Dry Run] Writing changes to: ${sourceFile.getFilePath()}`);
-        p.log.info(sourceFile.getFullText());
-      } else {
-        sourceFile.saveSync();
-      }
+      await saveFileChanges(sourceFile, cliOptions);
     }
-  });
-
+  }
 }
