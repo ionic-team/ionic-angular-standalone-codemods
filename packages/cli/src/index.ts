@@ -14,11 +14,16 @@ async function main() {
   p.intro(`${color.bgCyan(color.black(' Ionic Migrate '))}`);
 
   const cli = await p.group({
-
+    // Add a CLI option for dry running
+    dryRun: () => p.confirm({
+      message: 'Dry run?',
+      initialValue: true,
+    })
   });
 
-  const dir = cwd();
+  // const dir = cwd();
 
+  const dir = '/Users/sean/documents/ionic/ionic-migrate/ionic-migrate/apps/angular/ionic-angular-modules';
 
   const project = new Project({
     tsConfigFilePath: `${dir}/tsconfig.json`
@@ -26,30 +31,10 @@ async function main() {
 
   p.log.info(`Migrating project at ${dir}`)
 
-  // migrate(dir);
+  runStandaloneMigration(project, cli);
 
-  runStandaloneMigration(project);
+  p.outro('Migration complete!');
 
 }
 
 main().catch(console.error);
-
-
-function migrate(directory: string) {
-  const project = new Project({
-    tsConfigFilePath: `${directory}/tsconfig.json`
-  });
-
-  const mainTs = project.getSourceFile('src/main.ts');
-
-  if (mainTs !== undefined) {
-    console.log('we have a match!');
-    const bootstrapApplication = mainTs.getFunction('bootstrapApplication');
-
-    if (bootstrapApplication !== undefined) {
-      console.log('we have a bootstrapApplication!');
-    } else {
-      console.log('no bootstrap sorry');
-    }
-  }
-}
