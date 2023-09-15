@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, isPlatform } from '@ionic/angular';
 
 @NgModule({
   declarations: [
@@ -11,10 +11,9 @@ import { IonicModule } from '@ionic/angular';
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot({}),
+    IonicModule.forRoot({ mode: 'md', keyboardHeight: 320, inputShims: false }),
     AppRoutingModule
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
