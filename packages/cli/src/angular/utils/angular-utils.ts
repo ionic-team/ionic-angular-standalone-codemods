@@ -1,12 +1,59 @@
-import { SyntaxKind, type SourceFile } from "ts-morph";
+import { SyntaxKind, type SourceFile, ts } from "ts-morph";
 import { getDecoratorArgument, insertIntoDecoratorArgArray } from "./decorator-utils";
 
-export function findComponentTypescriptFileForTemplateFile(templateFile: SourceFile) {
-  // Given an HTML file, try to find the corresponding typescript file for the component class.
-  // We can check for files in the same directory with a similar name and additionally check
-  // if the matched ts file has a @Component decorator. If it does, then we can assume that
-  // it is the component class for the HTML file.
 
+/**
+ * Finds the NgModule class that declares a given component.
+ * @param sourceFile The component source file to find the NgModule class for.
+ */
+export function findNgModuleClassForComponent(sourceFile: SourceFile) {
+  const componentClassName = sourceFile.getClasses()[0]?.getName();
+
+  if (!componentClassName) {
+    return;
+  }
+
+  const sourceFiles = sourceFile.getProject().getSourceFiles();
+
+  const ngModuleClass = sourceFiles.find(f => {
+    const ngModuleDecorator = f.getClasses()[0]?.getDecorator('NgModule');
+
+    if (!ngModuleDecorator) {
+      return false;
+    }
+
+    const declarationsProperty = getDecoratorArgument(ngModuleDecorator, 'declarations');
+
+    if (!declarationsProperty) {
+      return false;
+    }
+
+    const declarationsArray = declarationsProperty.getInitializerIfKind(SyntaxKind.ArrayLiteralExpression);
+
+    if (!declarationsArray) {
+      return false;
+    }
+
+    const componentClass = declarationsArray.getElements().find(e => {
+      const identifier = e.compilerNode as ts.Identifier;
+      return identifier.getText() === componentClassName;
+    });
+
+    if (!componentClass) {
+      return false;
+    }
+
+    return true;
+  });
+
+  return ngModuleClass;
+}
+
+/**
+ * Finds the Angular component class for a given template file. 
+ * @param templateFile The template file to find the component class for.
+ */
+export function findComponentTypescriptFileForTemplateFile(templateFile: SourceFile) {
   const templateFilePath = templateFile.getFilePath();
   const templateFileName = templateFile.getBaseNameWithoutExtension();
 
@@ -28,6 +75,9 @@ export function findComponentTypescriptFileForTemplateFile(templateFile: SourceF
       return false;
     }
 
+    // TODO could make this even more accurate by 
+    // checking if the templateUrl matches the templateFile.
+
     return true;
   });
 
@@ -35,6 +85,11 @@ export function findComponentTypescriptFileForTemplateFile(templateFile: SourceF
 }
 
 
+/**
+ * Adds a new import to the imports array in the Component decorator.
+ * @param sourceFile The source file to add the import to.
+ * @param importName The name of the import to add.
+ */
 export function addImportToComponentDecorator(sourceFile: SourceFile, importName: string) {
   if (!isAngularComponentStandalone(sourceFile)) {
     console.warn('[Ionic Dev] Cannot add import to component decorator. Component is not standalone.');
@@ -44,6 +99,19 @@ export function addImportToComponentDecorator(sourceFile: SourceFile, importName
   const componentDecorator = getAngularComponentDecorator(sourceFile)!;
 
   insertIntoDecoratorArgArray(componentDecorator, 'imports', importName);
+}
+
+/**
+ * Adds a new import to the imports array in the NgModule decorator.
+ * @param sourceFile The source file to add the import to. 
+ * @param importName The name of the import to add.
+ */
+export const addImportToNgModuleDecorator = (sourceFile: SourceFile, importName: string) => {
+  const ngModuleDecorator = getAngularNgModuleDecorator(sourceFile);
+
+  if (ngModuleDecorator) {
+    insertIntoDecoratorArgArray(ngModuleDecorator, 'imports', importName);
+  }
 }
 
 /**
@@ -109,4 +177,13 @@ export function isAngularComponentClass(sourceFile: SourceFile) {
 export function getAngularComponentDecorator(sourceFile: SourceFile) {
   const componentDecorator = sourceFile.getClasses()[0]?.getDecorator('Component');
   return componentDecorator;
+}
+
+/**
+ * Returns the Angular NgModule decorator.
+ * @param sourceFile The source file to check.
+ */
+export function getAngularNgModuleDecorator(sourceFile: SourceFile) {
+  const ngModuleDecorator = sourceFile.getClasses()[0]?.getDecorator('NgModule');
+  return ngModuleDecorator;
 }

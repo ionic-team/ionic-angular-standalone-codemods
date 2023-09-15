@@ -6,7 +6,7 @@ import { parse } from '@angular-eslint/template-parser';
 import { getDecoratorArgument, insertIntoDecoratorArgArray } from "../../utils/decorator-utils";
 
 import * as p from '@clack/prompts';
-import { addImportToComponentDecorator, findComponentTypescriptFileForTemplateFile, getAngularComponentDecorator, isAngularComponentClass, isAngularComponentStandalone } from "../../utils/angular-utils";
+import { addImportToComponentDecorator, addImportToNgModuleDecorator, findComponentTypescriptFileForTemplateFile, findNgModuleClassForComponent, getAngularComponentDecorator, isAngularComponentClass, isAngularComponentStandalone } from "../../utils/angular-utils";
 import { IONIC_COMPONENTS } from "../../utils/ionic-utils";
 import { toCamelCase, toPascalCase } from "../../utils/string-utils";
 import { addImportToClass, getOrCreateConstructor } from "../../utils/typescript-utils";
@@ -64,12 +64,21 @@ export const parseAngularComponentTemplates = (directory: string, cliOptions: Cl
 }
 
 function migrateAngularComponentClass(sourceFile: SourceFile, ionicComponents: string[], ionIcons: string[], hasIonIcon: boolean, skippedIconsHtml: string[]) {
+  let ngModuleSourceFile: SourceFile | undefined;
+  let modifiedNgModule = false;
+
+  if (!isAngularComponentStandalone(sourceFile)) {
+    ngModuleSourceFile = findNgModuleClassForComponent(sourceFile);
+  }
+
   if (hasIonIcon) {
-
     if (isAngularComponentStandalone(sourceFile)) {
-      addImportToComponentDecorator(sourceFile, 'IonIcon');
-
       addImportToClass(sourceFile, 'IonIcon', '@ionic/angular/standalone');
+      addImportToComponentDecorator(sourceFile, 'IonIcon');
+    } else if (ngModuleSourceFile) {
+      addImportToClass(ngModuleSourceFile, 'IonIcon', '@ionic/angular/standalone');
+      addImportToNgModuleDecorator(ngModuleSourceFile, 'IonIcon');
+      modifiedNgModule = true;
     }
 
     addImportToClass(sourceFile, 'addIcons', 'ionicons');
@@ -87,6 +96,13 @@ function migrateAngularComponentClass(sourceFile: SourceFile, ionicComponents: s
       const componentClassName = toPascalCase(ionicComponent);
       addImportToComponentDecorator(sourceFile, componentClassName);
       addImportToClass(sourceFile, componentClassName, '@ionic/angular/standalone');
+    } else if (ngModuleSourceFile) {
+      const componentClassName = toPascalCase(ionicComponent);
+
+      addImportToClass(ngModuleSourceFile, componentClassName, '@ionic/angular/standalone');
+      addImportToNgModuleDecorator(ngModuleSourceFile, componentClassName);
+
+      modifiedNgModule = true;
     }
   }
 
@@ -102,6 +118,12 @@ function migrateAngularComponentClass(sourceFile: SourceFile, ionicComponents: s
     }
 
     p.log.warning('--------------------------------------------------');
+  }
+
+  if (modifiedNgModule && ngModuleSourceFile) {
+    p.log.info('[Ionic Dev] Writing changes to: ' + ngModuleSourceFile.getFilePath());
+    p.log.info(ngModuleSourceFile.getFullText());
+    // ngModuleSourceFile?.saveSync();
   }
 }
 
@@ -135,7 +157,7 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
         const staticNameAttribute = node.attributes.find((a: any) => a.name === 'name');
 
         if (staticNameAttribute) {
-          const iconName = staticNameAttribute.value;
+          const iconName = staticNameAttribute.value; // "{{ 'user'}}"
           if (!ionIcons.includes(iconName)) {
             ionIcons.push(iconName);
           }
