@@ -7,6 +7,8 @@ import { deleteFromDecoratorArgArray, getDecoratorArgument, insertIntoDecoratorA
  * @param sourceFile The component source file to find the NgModule class for.
  */
 export function findNgModuleClassForComponent(sourceFile: SourceFile) {
+  // TODO look into https://ts-morph.com/details/source-files#getting-referencing-files
+
   const componentClassName = sourceFile.getClasses()[0]?.getName();
 
   if (!componentClassName) {

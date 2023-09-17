@@ -6,18 +6,16 @@ import { parseAngularComponentTemplates } from "./0002-import-standalone-compone
 
 interface StandaloneMigrationOptions {
   project: Project;
-  cliOptions: CliOptions;
-  directory: string;
+  cliOptions: CliOptions
 }
 
 export const runStandaloneMigration = async ({
   project,
-  cliOptions,
-  directory
+  cliOptions
 }: StandaloneMigrationOptions) => {
   await migrateAppModule(project, cliOptions);
 
-  await parseAngularComponentTemplates(directory, cliOptions);
+  await parseAngularComponentTemplates(project, cliOptions);
 
   await migrateImportStatements(project, cliOptions);
 };

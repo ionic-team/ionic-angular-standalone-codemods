@@ -29,12 +29,17 @@ async function main() {
     tsConfigFilePath: `${dir}/tsconfig.json`
   });
 
+  project.addSourceFilesAtPaths([
+    `${dir}/**/*.html`,
+    `${dir}/**/*.ts`
+  ]);
+
+
   p.log.info(`Migrating project at ${dir}`)
 
   runStandaloneMigration({
     project,
-    cliOptions: cli,
-    directory: dir
+    cliOptions: cli
   });
 
   p.outro('Migration complete!');

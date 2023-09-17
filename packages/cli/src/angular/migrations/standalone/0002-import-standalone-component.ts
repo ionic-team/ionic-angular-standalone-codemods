@@ -13,13 +13,7 @@ import { addImportToClass, getOrCreateConstructor } from "../../utils/typescript
 import { saveFileChanges } from "../../utils/log-utils";
 
 
-export const parseAngularComponentTemplates = async (directory: string, cliOptions: CliOptions) => {
-  const sourceDirectory = `${directory}/src`;
-  const project = new Project({ libFolderPath: sourceDirectory });
-
-  project.addSourceFilesAtPaths(`${sourceDirectory}/**/*.html`);
-  project.addSourceFilesAtPaths(`${sourceDirectory}/**/*.ts`);
-
+export const parseAngularComponentTemplates = async (project: Project, cliOptions: CliOptions) => {
   for (const sourceFile of project.getSourceFiles()) {
     if (sourceFile.getFilePath().endsWith('.html')) {
       const htmlAsString = sourceFile.getFullText();
