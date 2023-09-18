@@ -1,5 +1,3 @@
-// TODO rename this file to the last migration that it performs.
-
 import type { Project } from "ts-morph";
 import type { CliOptions } from "../../../types/cli-options";
 

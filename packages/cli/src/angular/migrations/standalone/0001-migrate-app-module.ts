@@ -1,7 +1,6 @@
 import { Project, SyntaxKind, ts } from "ts-morph";
 import { CliOptions } from "../../../types/cli-options";
 
-import * as p from '@clack/prompts';
 import { saveFileChanges } from "../../utils/log-utils";
 
 export const migrateAppModule = async (project: Project, cliOptions: CliOptions) => {
@@ -101,7 +100,4 @@ export const migrateAppModule = async (project: Project, cliOptions: CliOptions)
   providersPropertyAssignment?.addElement(`provideIonicAngular(${ionicModuleForRootCallExpression?.arguments?.map(a => a.getText()).join(', ')})`);
 
   await saveFileChanges(appModule, cliOptions);
-
-  p.log.step('Migrated app.module.ts to use provideIonicAngular.');
-
 }

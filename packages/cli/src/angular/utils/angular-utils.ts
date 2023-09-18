@@ -123,6 +123,11 @@ export const addImportToNgModuleDecorator = (sourceFile: SourceFile, importName:
   }
 }
 
+/**
+ * Removes an import from the imports array in the NgModule decorator.
+ * @param sourceFile The source file to remove the import from.
+ * @param importName The name of the import to remove.
+ */
 export const removeImportFromNgModuleDecorator = (sourceFile: SourceFile, importName: string) => {
   const ngModuleDecorator = getAngularNgModuleDecorator(sourceFile);
 

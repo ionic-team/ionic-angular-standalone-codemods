@@ -5,7 +5,7 @@ import { CliOptions } from "../../../types/cli-options";
 import { parse } from '@angular-eslint/template-parser';
 import { getDecoratorArgument } from "../../utils/decorator-utils";
 
-import * as p from '@clack/prompts';
+import { log } from '@clack/prompts';
 import { addImportToComponentDecorator, addImportToNgModuleDecorator, findComponentTypescriptFileForTemplateFile, findNgModuleClassForComponent, getAngularComponentDecorator, isAngularComponentClass, isAngularComponentStandalone } from "../../utils/angular-utils";
 import { IONIC_COMPONENTS } from "../../utils/ionic-utils";
 import { kebabCaseToCamelCase, kebabCaseToPascalCase } from "../../utils/string-utils";
@@ -81,16 +81,16 @@ async function migrateAngularComponentClass(sourceFile: SourceFile, ionicCompone
   }
 
   if (skippedIconsHtml.length > 0) {
-    p.log.warning('--------------------------------------------------');
-    p.log.warning(`Dynamic ion-icon name detected in component template: ${sourceFile.getFilePath()}`);
-    p.log.warning(`Ionic is unable to automatically migrate these icons.`);
-    p.log.warning(`You will need to manually import these icons into your component:`);
+    log.warning('--------------------------------------------------');
+    log.warning(`Dynamic ion-icon name detected in component template: ${sourceFile.getFilePath()}`);
+    log.warning(`Ionic is unable to automatically migrate these icons.`);
+    log.warning(`You will need to manually import these icons into your component:`);
 
     for (const skippedIcon of skippedIconsHtml) {
-      p.log.warning(`\t${skippedIcon}`);
+      log.warning(`\t${skippedIcon}`);
     }
 
-    p.log.warning('--------------------------------------------------');
+    log.warning('--------------------------------------------------');
   }
 
   if (modifiedNgModule && ngModuleSourceFile) {

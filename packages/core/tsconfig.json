@@ -1,9 +1,0 @@
-{
-  "extends": "tsconfig/base.json",
-  "compilerOptions": {
-    "types": ["jest"],
-    "outDir": "dist"
-  },
-  "include": ["src/"],
-  "exclude": ["dist", "build", "node_modules", "**/*.spec.ts"]
-}

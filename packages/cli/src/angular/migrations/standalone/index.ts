@@ -1,7 +1,7 @@
 import type { Project } from "ts-morph";
 import { migrateAppModule } from "./0001-migrate-app-module";
 import { CliOptions } from "../../../types/cli-options";
-import { migrateImportStatements } from "./000X-migrate-import-statements";
+import { migrateImportStatements } from "./0004-migrate-import-statements";
 import { parseAngularComponentTemplates } from "./0002-import-standalone-component";
 import { migrateBootstrapApplication } from "./0003-migrate-bootstrap-application";
 

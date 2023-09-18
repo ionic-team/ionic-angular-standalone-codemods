@@ -29,7 +29,7 @@ async function main() {
     }),
     dir: () => text({
       message: 'What is the path to your project? Leave blank to use the current working directory.',
-      initialValue: '/Users/sean/documents/ionic/ionic-migrate/ionic-migrate/apps/angular/ionic-angular-standalone' // cwd() // TODO make sure this is set to cwd()
+      initialValue: '/Users/sean/documents/ionic/ionic-migrate/ionic-migrate/apps/angular/ionic-angular-modules' // cwd() // TODO make sure this is set to cwd()
     })
   });
 
