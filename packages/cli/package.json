@@ -13,7 +13,8 @@
   "scripts": {
     "start": "jiti ./src/index.ts",
     "build": "tsup src/index.ts --format cjs,esm --dts",
-    "watch": "pnpm run build --watch"
+    "watch": "pnpm run build --watch",
+    "dev": "pnpm run build --watch"
   },
   "devDependencies": {
     "eslint": "^8.0.0",
