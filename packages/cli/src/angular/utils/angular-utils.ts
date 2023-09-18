@@ -104,6 +104,8 @@ export function addImportToComponentDecorator(sourceFile: SourceFile, importName
   const componentDecorator = getAngularComponentDecorator(sourceFile)!;
 
   insertIntoDecoratorArgArray(componentDecorator, 'imports', importName);
+
+  sourceFile.formatText();
 }
 
 /**
@@ -116,6 +118,8 @@ export const addImportToNgModuleDecorator = (sourceFile: SourceFile, importName:
 
   if (ngModuleDecorator) {
     insertIntoDecoratorArgArray(ngModuleDecorator, 'imports', importName);
+
+    sourceFile.formatText();
   }
 }
 
