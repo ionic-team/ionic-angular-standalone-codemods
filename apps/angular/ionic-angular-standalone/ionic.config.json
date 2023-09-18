@@ -1,0 +1,7 @@
+{
+  "name": "ionic-angular-standalone",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
