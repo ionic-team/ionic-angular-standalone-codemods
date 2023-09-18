@@ -10,7 +10,6 @@ export const migrateAngularJsonAssets = async (project: Project, cliOptions: Cli
   const angularJsonSourceFile = project.getSourceFiles().find((sourceFile) => sourceFile.getFilePath().endsWith("angular.json"));
 
   if (angularJsonSourceFile === undefined) {
-    console.log('no angular.json');
     return;
   }
 
