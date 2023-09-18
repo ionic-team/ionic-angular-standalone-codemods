@@ -70,6 +70,7 @@ async function main() {
   project.addSourceFilesAtPaths([
     `${cli.dir}/src/**/*.html`,
     `${cli.dir}/src/**/*.ts`,
+    `${cli.dir}/angular.json`,
   ]);
 
   try {
