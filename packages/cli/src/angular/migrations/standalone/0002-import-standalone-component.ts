@@ -8,7 +8,7 @@ import { getDecoratorArgument } from "../../utils/decorator-utils";
 import * as p from '@clack/prompts';
 import { addImportToComponentDecorator, addImportToNgModuleDecorator, findComponentTypescriptFileForTemplateFile, findNgModuleClassForComponent, getAngularComponentDecorator, isAngularComponentClass, isAngularComponentStandalone } from "../../utils/angular-utils";
 import { IONIC_COMPONENTS } from "../../utils/ionic-utils";
-import { toCamelCase, toPascalCase } from "../../utils/string-utils";
+import { kebabCaseToCamelCase, kebabCaseToPascalCase } from "../../utils/string-utils";
 import { addImportToClass, getOrCreateConstructor } from "../../utils/typescript-utils";
 import { saveFileChanges } from "../../utils/log-utils";
 
@@ -58,20 +58,20 @@ async function migrateAngularComponentClass(sourceFile: SourceFile, ionicCompone
     addImportToClass(sourceFile, 'addIcons', 'ionicons');
 
     for (const ionIcon of ionIcons) {
-      const iconName = toCamelCase(ionIcon);
+      const iconName = kebabCaseToCamelCase(ionIcon);
       addImportToClass(sourceFile, iconName, 'ionicons/icons');
     }
 
-    insertAddIconsIntoConstructor(sourceFile, ionIcons.map(i => toCamelCase(i)));
+    insertAddIconsIntoConstructor(sourceFile, ionIcons.map(i => kebabCaseToCamelCase(i)));
   }
 
   for (const ionicComponent of ionicComponents) {
     if (isAngularComponentStandalone(sourceFile)) {
-      const componentClassName = toPascalCase(ionicComponent);
+      const componentClassName = kebabCaseToPascalCase(ionicComponent);
       addImportToComponentDecorator(sourceFile, componentClassName);
       addImportToClass(sourceFile, componentClassName, '@ionic/angular/standalone');
     } else if (ngModuleSourceFile) {
-      const componentClassName = toPascalCase(ionicComponent);
+      const componentClassName = kebabCaseToPascalCase(ionicComponent);
 
       addImportToClass(ngModuleSourceFile, componentClassName, '@ionic/angular/standalone');
       addImportToNgModuleDecorator(ngModuleSourceFile, componentClassName);

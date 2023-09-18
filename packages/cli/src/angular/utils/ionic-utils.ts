@@ -89,4 +89,4 @@ export const IONIC_COMPONENTS = [
   'ion-toast',
   'ion-toggle',
   'ion-title',
-];
+]; // TODO can we generate this from @ionic/core and import it here?

@@ -4,6 +4,11 @@ import { deleteFromDecoratorArgArray, getDecoratorArgument, insertIntoDecoratorA
 
 /**
  * Finds the NgModule class that declares a given component.
+ * 
+ * For example, if the source file is a component called `MyComponent`,
+ * this function will find the declaring NgModule class, for example `MyComponentModule`.
+ * It does this by finding the NgModule that declares the component in its `declarations` array.
+ * 
  * @param sourceFile The component source file to find the NgModule class for.
  */
 export function findNgModuleClassForComponent(sourceFile: SourceFile) {
