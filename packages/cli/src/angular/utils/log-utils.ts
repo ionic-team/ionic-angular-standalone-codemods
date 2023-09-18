@@ -1,7 +1,7 @@
 import type { SourceFile } from "ts-morph";
 import type { CliOptions } from "../../types/cli-options";
 
-import { log } from '@clack/prompts';
+import { log } from "@clack/prompts";
 
 /**
  * Saves the changes to a source file. If the `dryRun` option is set, the changes will be logged to the console instead.
@@ -9,9 +9,12 @@ import { log } from '@clack/prompts';
  * @param cliOptions The CLI options.
  * @returns A promise that resolves when the file has been saved.
  */
-export function saveFileChanges(sourceFile: SourceFile, cliOptions: CliOptions): Promise<void> {
+export function saveFileChanges(
+  sourceFile: SourceFile,
+  cliOptions: CliOptions,
+): Promise<void> {
   if (cliOptions.dryRun) {
-    log.info('[Dry Run] Writing changes to: ' + sourceFile.getFilePath());
+    log.info("[Dry Run] Writing changes to: " + sourceFile.getFilePath());
     log.info(sourceFile.getFullText());
     return Promise.resolve();
   } else {

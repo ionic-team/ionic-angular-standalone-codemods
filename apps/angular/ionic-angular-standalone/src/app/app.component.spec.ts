@@ -6,8 +6,8 @@ describe('AppComponent', () => {
   it('should create the app', () => {
     TestBed.overrideComponent(AppComponent, {
       add: {
-        imports: [RouterTestingModule]
-      }
+        imports: [RouterTestingModule],
+      },
     });
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;

@@ -6,14 +6,12 @@ import { AppComponent } from './app.component';
 import { IonicModule, isPlatform } from '@ionic/angular';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     IonicModule.forRoot({ mode: 'md', keyboardHeight: 320, inputShims: false }),
-    AppRoutingModule
+    AppRoutingModule,
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

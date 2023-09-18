@@ -6,19 +6,23 @@ import { SyntaxKind, type Decorator } from "ts-morph";
  * @param propertyName The name of the property to get the argument for.
  * @returns The property assignment of the decorator argument.
  */
-export const getDecoratorArgument = (decorator: Decorator, propertyName: string) => {
-  const args = decorator.getArguments()
+export const getDecoratorArgument = (
+  decorator: Decorator,
+  propertyName: string,
+) => {
+  const args = decorator.getArguments();
 
   if (args.length === 0) {
     return;
   }
 
   const arg = args[0];
-  const prop = arg.getDescendantsOfKind(SyntaxKind.PropertyAssignment)
-    .find(n => n.compilerNode.name.getText() === propertyName);
+  const prop = arg
+    .getDescendantsOfKind(SyntaxKind.PropertyAssignment)
+    .find((n) => n.compilerNode.name.getText() === propertyName);
 
   return prop;
-}
+};
 
 /**
  * Inserts a value into an array property of a decorator. Creates the decorator property if it does not exist.
@@ -26,16 +30,25 @@ export const getDecoratorArgument = (decorator: Decorator, propertyName: string)
  * @param propertyName The name of the property to insert the value into.
  * @param value The value to insert into the array.
  */
-export const insertIntoDecoratorArgArray = (decorator: Decorator, propertyName: string, value: string) => {
+export const insertIntoDecoratorArgArray = (
+  decorator: Decorator,
+  propertyName: string,
+  value: string,
+) => {
   let property = getDecoratorArgument(decorator, propertyName);
   if (!property) {
-    property = decorator.getArguments()[0].asKind(SyntaxKind.ObjectLiteralExpression)!.addPropertyAssignment({
-      name: propertyName,
-      initializer: '[]'
-    });
+    property = decorator
+      .getArguments()[0]
+      .asKind(SyntaxKind.ObjectLiteralExpression)!
+      .addPropertyAssignment({
+        name: propertyName,
+        initializer: "[]",
+      });
   }
 
-  const propertyInitializer = property.getInitializerIfKind(SyntaxKind.ArrayLiteralExpression)!;
+  const propertyInitializer = property.getInitializerIfKind(
+    SyntaxKind.ArrayLiteralExpression,
+  )!;
 
   propertyInitializer.addElement(value);
 };
@@ -46,17 +59,25 @@ export const insertIntoDecoratorArgArray = (decorator: Decorator, propertyName: 
  * @param propertyName The name of the property to delete the value from.
  * @param value The value to delete from the array.
  */
-export const deleteFromDecoratorArgArray = (decorator: Decorator, propertyName: string, value: string) => {
+export const deleteFromDecoratorArgArray = (
+  decorator: Decorator,
+  propertyName: string,
+  value: string,
+) => {
   const property = getDecoratorArgument(decorator, propertyName);
   if (!property) {
     return;
   }
 
-  const propertyInitializer = property.getInitializerIfKind(SyntaxKind.ArrayLiteralExpression)!;
+  const propertyInitializer = property.getInitializerIfKind(
+    SyntaxKind.ArrayLiteralExpression,
+  )!;
 
-  const element = propertyInitializer.getElements().find(e => e.getText() === value);
+  const element = propertyInitializer
+    .getElements()
+    .find((e) => e.getText() === value);
 
   if (element) {
     propertyInitializer.removeElement(element);
   }
-}
+};

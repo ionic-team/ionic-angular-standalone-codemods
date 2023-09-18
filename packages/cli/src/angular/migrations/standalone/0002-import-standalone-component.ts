@@ -2,39 +2,73 @@ import { Project, SourceFile, SyntaxKind } from "ts-morph";
 import { CliOptions } from "../../../types/cli-options";
 
 // @ts-ignore
-import { parse } from '@angular-eslint/template-parser';
+import { parse } from "@angular-eslint/template-parser";
 import { getDecoratorArgument } from "../../utils/decorator-utils";
 
-import { log } from '@clack/prompts';
-import { addImportToComponentDecorator, addImportToNgModuleDecorator, findComponentTypescriptFileForTemplateFile, findNgModuleClassForComponent, getAngularComponentDecorator, isAngularComponentClass, isAngularComponentStandalone } from "../../utils/angular-utils";
+import { log } from "@clack/prompts";
+import {
+  addImportToComponentDecorator,
+  addImportToNgModuleDecorator,
+  findComponentTypescriptFileForTemplateFile,
+  findNgModuleClassForComponent,
+  getAngularComponentDecorator,
+  isAngularComponentClass,
+  isAngularComponentStandalone,
+} from "../../utils/angular-utils";
 import { IONIC_COMPONENTS } from "../../utils/ionic-utils";
-import { kebabCaseToCamelCase, kebabCaseToPascalCase } from "../../utils/string-utils";
-import { addImportToClass, getOrCreateConstructor } from "../../utils/typescript-utils";
+import {
+  kebabCaseToCamelCase,
+  kebabCaseToPascalCase,
+} from "../../utils/string-utils";
+import {
+  addImportToClass,
+  getOrCreateConstructor,
+} from "../../utils/typescript-utils";
 import { saveFileChanges } from "../../utils/log-utils";
 
-
-export const parseAngularComponentTemplates = async (project: Project, cliOptions: CliOptions) => {
+export const parseAngularComponentTemplates = async (
+  project: Project,
+  cliOptions: CliOptions,
+) => {
   for (const sourceFile of project.getSourceFiles()) {
-    if (sourceFile.getFilePath().endsWith('.html')) {
+    if (sourceFile.getFilePath().endsWith(".html")) {
       const htmlAsString = sourceFile.getFullText();
 
-      const { skippedIconsHtml, ionIcons, ionicComponents } = detectIonicComponentsAndIcons(htmlAsString, sourceFile.getFilePath());
+      const { skippedIconsHtml, ionIcons, ionicComponents } =
+        detectIonicComponentsAndIcons(htmlAsString, sourceFile.getFilePath());
 
       if (ionicComponents.length > 0 || ionIcons.length > 0) {
-        const tsSourceFile = findComponentTypescriptFileForTemplateFile(sourceFile);
+        const tsSourceFile =
+          findComponentTypescriptFileForTemplateFile(sourceFile);
 
         if (tsSourceFile) {
-          await migrateAngularComponentClass(tsSourceFile, ionicComponents, ionIcons, skippedIconsHtml, cliOptions);
+          await migrateAngularComponentClass(
+            tsSourceFile,
+            ionicComponents,
+            ionIcons,
+            skippedIconsHtml,
+            cliOptions,
+          );
 
           await saveFileChanges(tsSourceFile, cliOptions);
         }
       }
-    } else if (sourceFile.getFilePath().endsWith('.ts')) {
+    } else if (sourceFile.getFilePath().endsWith(".ts")) {
       const templateAsString = getComponentTemplateAsString(sourceFile);
       if (templateAsString) {
-        const { skippedIconsHtml, ionIcons, ionicComponents } = detectIonicComponentsAndIcons(templateAsString, sourceFile.getFilePath());
+        const { skippedIconsHtml, ionIcons, ionicComponents } =
+          detectIonicComponentsAndIcons(
+            templateAsString,
+            sourceFile.getFilePath(),
+          );
 
-        await migrateAngularComponentClass(sourceFile, ionicComponents, ionIcons, skippedIconsHtml, cliOptions);
+        await migrateAngularComponentClass(
+          sourceFile,
+          ionicComponents,
+          ionIcons,
+          skippedIconsHtml,
+          cliOptions,
+        );
 
         if (ionicComponents.length > 0 || ionIcons.length > 0) {
           await saveFileChanges(sourceFile, cliOptions);
@@ -42,9 +76,15 @@ export const parseAngularComponentTemplates = async (project: Project, cliOption
       }
     }
   }
-}
+};
 
-async function migrateAngularComponentClass(sourceFile: SourceFile, ionicComponents: string[], ionIcons: string[], skippedIconsHtml: string[], cliOptions: CliOptions) {
+async function migrateAngularComponentClass(
+  sourceFile: SourceFile,
+  ionicComponents: string[],
+  ionIcons: string[],
+  skippedIconsHtml: string[],
+  cliOptions: CliOptions,
+) {
   let ngModuleSourceFile: SourceFile | undefined;
   let modifiedNgModule = false;
 
@@ -55,25 +95,36 @@ async function migrateAngularComponentClass(sourceFile: SourceFile, ionicCompone
   const hasIcons = ionIcons.length > 0;
 
   if (hasIcons) {
-    addImportToClass(sourceFile, 'addIcons', 'ionicons');
+    addImportToClass(sourceFile, "addIcons", "ionicons");
 
     for (const ionIcon of ionIcons) {
       const iconName = kebabCaseToCamelCase(ionIcon);
-      addImportToClass(sourceFile, iconName, 'ionicons/icons');
+      addImportToClass(sourceFile, iconName, "ionicons/icons");
     }
 
-    insertAddIconsIntoConstructor(sourceFile, ionIcons.map(i => kebabCaseToCamelCase(i)));
+    insertAddIconsIntoConstructor(
+      sourceFile,
+      ionIcons.map((i) => kebabCaseToCamelCase(i)),
+    );
   }
 
   for (const ionicComponent of ionicComponents) {
     if (isAngularComponentStandalone(sourceFile)) {
       const componentClassName = kebabCaseToPascalCase(ionicComponent);
       addImportToComponentDecorator(sourceFile, componentClassName);
-      addImportToClass(sourceFile, componentClassName, '@ionic/angular/standalone');
+      addImportToClass(
+        sourceFile,
+        componentClassName,
+        "@ionic/angular/standalone",
+      );
     } else if (ngModuleSourceFile) {
       const componentClassName = kebabCaseToPascalCase(ionicComponent);
 
-      addImportToClass(ngModuleSourceFile, componentClassName, '@ionic/angular/standalone');
+      addImportToClass(
+        ngModuleSourceFile,
+        componentClassName,
+        "@ionic/angular/standalone",
+      );
       addImportToNgModuleDecorator(ngModuleSourceFile, componentClassName);
 
       modifiedNgModule = true;
@@ -81,16 +132,20 @@ async function migrateAngularComponentClass(sourceFile: SourceFile, ionicCompone
   }
 
   if (skippedIconsHtml.length > 0) {
-    log.warning('--------------------------------------------------');
-    log.warning(`Dynamic ion-icon name detected in component template: ${sourceFile.getFilePath()}`);
+    log.warning("--------------------------------------------------");
+    log.warning(
+      `Dynamic ion-icon name detected in component template: ${sourceFile.getFilePath()}`,
+    );
     log.warning(`Ionic is unable to automatically migrate these icons.`);
-    log.warning(`You will need to manually import these icons into your component:`);
+    log.warning(
+      `You will need to manually import these icons into your component:`,
+    );
 
     for (const skippedIcon of skippedIconsHtml) {
       log.warning(`\t${skippedIcon}`);
     }
 
-    log.warning('--------------------------------------------------');
+    log.warning("--------------------------------------------------");
   }
 
   if (modifiedNgModule && ngModuleSourceFile) {
@@ -98,9 +153,12 @@ async function migrateAngularComponentClass(sourceFile: SourceFile, ionicCompone
   }
 }
 
-function insertAddIconsIntoConstructor(sourceFile: SourceFile, icons: string[]) {
+function insertAddIconsIntoConstructor(
+  sourceFile: SourceFile,
+  icons: string[],
+) {
   const constructor = getOrCreateConstructor(sourceFile);
-  constructor.addStatements(`addIcons({ ${icons.join(', ')} });`);
+  constructor.addStatements(`addIcons({ ${icons.join(", ")} });`);
 }
 
 function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
@@ -112,16 +170,17 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
   const skippedIconsHtml: string[] = [];
 
   const recursivelyFindIonicComponents = (node: any) => {
-    if (node.type === 'Element$1') {
-
+    if (node.type === "Element$1") {
       if (IONIC_COMPONENTS.includes(node.name)) {
         if (!ionicComponents.includes(node.name)) {
           ionicComponents.push(node.name);
         }
       }
 
-      if (node.name === 'ion-icon') {
-        const staticNameAttribute = node.attributes.find((a: any) => a.name === 'name' || a.name === 'icon');
+      if (node.name === "ion-icon") {
+        const staticNameAttribute = node.attributes.find(
+          (a: any) => a.name === "name" || a.name === "icon",
+        );
 
         if (staticNameAttribute) {
           const iconName = staticNameAttribute.value;
@@ -129,7 +188,9 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
             ionIcons.push(iconName);
           }
         } else {
-          const boundNameAttribute = node.inputs.find((a: any) => a.name === 'name' || a.name === 'icon');
+          const boundNameAttribute = node.inputs.find(
+            (a: any) => a.name === "name" || a.name === "icon",
+          );
 
           if (boundNameAttribute) {
             const skippedIcon = node.sourceSpan.toString();
@@ -162,7 +223,7 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
         }
       }
     }
-  }
+  };
 
   for (const node of nodes) {
     recursivelyFindIonicComponents(node);
@@ -171,36 +232,41 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
   return {
     ionicComponents,
     ionIcons,
-    skippedIconsHtml
-  }
+    skippedIconsHtml,
+  };
 }
 
 /**
  * Returns the template string value for an Angular component.
- * 
+ *
  * For example:
  * ```
  * @Component({
  *  template: '<p>Testing</p>'
  * })
  * ```
- * 
+ *
  * Would return:
  * ```
  * <p>Testing</p>
  * ```
- * 
+ *
  * @param sourceFile The source file to parse.
  */
 function getComponentTemplateAsString(sourceFile: SourceFile) {
   if (isAngularComponentClass(sourceFile)) {
     const componentDecorator = getAngularComponentDecorator(sourceFile)!;
-    const templatePropertyAssignment = getDecoratorArgument(componentDecorator, 'template');
+    const templatePropertyAssignment = getDecoratorArgument(
+      componentDecorator,
+      "template",
+    );
 
     if (!templatePropertyAssignment) {
       return;
     }
 
-    return templatePropertyAssignment.getDescendantsOfKind(SyntaxKind.NoSubstitutionTemplateLiteral)[0]?.getLiteralValue();
+    return templatePropertyAssignment
+      .getDescendantsOfKind(SyntaxKind.NoSubstitutionTemplateLiteral)[0]
+      ?.getLiteralValue();
   }
 }
