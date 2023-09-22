@@ -92,7 +92,7 @@ describe("addImportToClass", () => {
     );
   });
 
-  it('should do nothing if the source file does not have a class', () => {
+  it("should do nothing if the source file does not have a class", () => {
     const sourceFileContent = `
         export function foo() { }
       `;
@@ -105,6 +105,7 @@ describe("addImportToClass", () => {
     expect(dedent(sourceFile.getText())).toBe(
       dedent(`
       export function foo() { }
-      `));
+      `),
+    );
   });
 });
