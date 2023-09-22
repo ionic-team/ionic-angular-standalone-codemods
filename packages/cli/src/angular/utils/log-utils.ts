@@ -9,15 +9,16 @@ import { log } from "@clack/prompts";
  * @param cliOptions The CLI options.
  * @returns A promise that resolves when the file has been saved.
  */
-export function saveFileChanges(
+export async function saveFileChanges(
   sourceFile: SourceFile,
   cliOptions: CliOptions,
-): Promise<void> {
+): Promise<string> {
+  sourceFile.formatText();
   if (cliOptions.dryRun) {
     log.info("[Dry Run] Writing changes to: " + sourceFile.getFilePath());
     log.info(sourceFile.getFullText());
-    return Promise.resolve();
   } else {
-    return sourceFile.save();
+    await sourceFile.save();
   }
+  return sourceFile.getFullText();
 }

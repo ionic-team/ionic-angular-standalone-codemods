@@ -8,28 +8,33 @@ describe('saveFileChanges', () => {
     const sourceFile: any = {
       getFilePath: () => 'foo.ts',
       getFullText: () => 'foo',
+      formatText: vi.fn(),
       save: vi.fn()
     };
     const cliOptions = {
       dryRun: true,
     };
 
-    await saveFileChanges(sourceFile, cliOptions);
+    const result = await saveFileChanges(sourceFile, cliOptions);
 
     expect(sourceFile.save).not.toHaveBeenCalled();
+    expect(result).toBe('foo');
   });
 
   it('should save changes if dryRun is false', async () => {
     const sourceFile: any = {
-      save: vi.fn()
+      save: vi.fn(),
+      getFullText: () => 'foo',
+      formatText: vi.fn(),
     };
     const cliOptions = {
       dryRun: false,
     };
 
-    await saveFileChanges(sourceFile, cliOptions);
+    const result = await saveFileChanges(sourceFile, cliOptions);
 
     expect(sourceFile.save).toHaveBeenCalled();
+    expect(result).toBe('foo');
   });
 
 });

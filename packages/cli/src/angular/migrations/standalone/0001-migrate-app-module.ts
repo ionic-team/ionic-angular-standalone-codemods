@@ -116,5 +116,5 @@ export const migrateAppModule = async (
       .join(", ")})`,
   );
 
-  await saveFileChanges(appModule, cliOptions);
+  return await saveFileChanges(appModule, cliOptions);
 };
