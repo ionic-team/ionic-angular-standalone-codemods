@@ -12,6 +12,7 @@ import {
 import color from "picocolors";
 
 import { Project } from "ts-morph";
+import * as fs from 'node:fs';
 
 import { cwd } from "node:process";
 import { runStandaloneMigration } from "./angular/migrations/standalone";
@@ -62,9 +63,15 @@ async function main() {
   const s = spinner();
   s.start(`Migrating project at ${cli.dir}`);
 
-  const project = new Project({
-    tsConfigFilePath: `${cli.dir}/tsconfig.json`,
-  });
+  let project: Project;
+
+  if (fs.existsSync(`${cli.dir}/tsconfig.json`)) {
+    project = new Project({
+      tsConfigFilePath: `${cli.dir}/tsconfig.json`,
+    });
+  } else {
+    project = new Project();
+  }
 
   project.addSourceFilesAtPaths([
     `${cli.dir}/src/**/*.html`,
@@ -73,18 +80,23 @@ async function main() {
   ]);
 
   try {
-    await runStandaloneMigration({
+    const success = await runStandaloneMigration({
       project,
       cliOptions: cli,
+      dir: cli.dir,
     });
 
-    s.stop(`Successfully migrated project at ${cli.dir}`);
+    if (success) {
+      s.stop(`Successfully migrated project at ${cli.dir}`);
+
+      log.info(
+        "We recommend that you review the changes made by this migration and run any code formatting (prettier) before committing them to your project.",
+      );
+    } else {
+      s.stop();
+    }
 
     outro(`${color.bgBlue(color.white("Migration completed!"))}`);
-
-    log.info(
-      "We recommend that you review the changes made by this migration and run any code formatting (prettier) before committing them to your project.",
-    );
   } catch (e: any) {
     s.stop();
 
