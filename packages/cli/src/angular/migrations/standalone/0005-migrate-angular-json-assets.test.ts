@@ -31,11 +31,11 @@ describe('migrateAngularJsonAssets', () => {
       }
     };
 
-    project.createSourceFile('angular.json', JSON.stringify(angularJson, null, 2));
+    const angularJsonSourceFile = project.createSourceFile('angular.json', JSON.stringify(angularJson, null, 2));
 
-    const result = await migrateAngularJsonAssets(project, { dryRun: false });
+    await migrateAngularJsonAssets(project, { dryRun: false });
 
-    expect(dedent(result!)).toEqual(JSON.stringify({
+    expect(dedent(angularJsonSourceFile.getText()!)).toEqual(JSON.stringify({
       projects: {
         app: {
           architect: {

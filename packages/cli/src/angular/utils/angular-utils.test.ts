@@ -17,7 +17,7 @@ describe('getAngularNgModuleDecorator', () => {
       export class AppModule {}
     `;
 
-    const project = new Project();
+    const project = new Project({ useInMemoryFileSystem: true });
     const sourceFile = project.createSourceFile('foo.ts', sourceFileContent);
 
     const actual = getAngularNgModuleDecorator(sourceFile);
@@ -44,7 +44,7 @@ describe('getAngularComponentDecorator', () => {
       export class MyComponent {}
     `;
 
-    const project = new Project();
+    const project = new Project({ useInMemoryFileSystem: true });
     const sourceFile = project.createSourceFile('foo.ts', sourceFileContent);
 
     const actual = getAngularComponentDecorator(sourceFile);
@@ -72,7 +72,7 @@ describe('isAngularComponentClass', () => {
     export class MyComponent {}
   `;
 
-    const project = new Project();
+    const project = new Project({ useInMemoryFileSystem: true });
     const sourceFile = project.createSourceFile('foo.ts', sourceFileContent);
 
     expect(isAngularComponentClass(sourceFile)).toBe(true);
@@ -87,7 +87,7 @@ describe('isAngularComponentClass', () => {
     export class MyService {}
   `;
 
-    const project = new Project();
+    const project = new Project({ useInMemoryFileSystem: true });
     const sourceFile = project.createSourceFile('foo.ts', sourceFileContent);
 
     expect(isAngularComponentClass(sourceFile)).toBe(false);
@@ -104,7 +104,7 @@ describe('isAngularComponentClass', () => {
     export class MyComponent {}
   `;
 
-    const project = new Project();
+    const project = new Project({ useInMemoryFileSystem: true });
     const sourceFile = project.createSourceFile('foo.ts', sourceFileContent);
 
     expect(isAngularComponentClass(sourceFile)).toBe(false);
@@ -126,7 +126,7 @@ describe('isAngularComponentStandalone', () => {
     export class MyComponent {}
   `;
 
-    const project = new Project();
+    const project = new Project({ useInMemoryFileSystem: true });
     const sourceFile = project.createSourceFile('foo.ts', sourceFileContent);
 
     expect(isAngularComponentStandalone(sourceFile)).toBe(true);
@@ -144,7 +144,7 @@ describe('isAngularComponentStandalone', () => {
     export class MyComponent {}
   `;
 
-    const project = new Project();
+    const project = new Project({ useInMemoryFileSystem: true });
     const sourceFile = project.createSourceFile('foo.ts', sourceFileContent);
 
     expect(isAngularComponentStandalone(sourceFile)).toBe(false);
@@ -161,7 +161,7 @@ describe('isAngularComponentStandalone', () => {
     export class MyComponent {}
   `;
 
-    const project = new Project();
+    const project = new Project({ useInMemoryFileSystem: true });
     const sourceFile = project.createSourceFile('foo.ts', sourceFileContent);
 
     expect(isAngularComponentStandalone(sourceFile)).toBe(false);

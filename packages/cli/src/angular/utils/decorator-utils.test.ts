@@ -15,7 +15,7 @@ describe('getDecoratorArgument', () => {
       export class AppModule { }
     `;
 
-    const project = new Project();
+    const project = new Project({ useInMemoryFileSystem: true });
     const sourceFile = project.createSourceFile('foo.ts', sourceFileContent);
 
     const decorator = sourceFile.getClasses()[0]?.getDecorator('NgModule');
@@ -40,7 +40,7 @@ describe('insertIntoDecoratorArgArray', () => {
       export class AppModule { }
     `;
 
-    const project = new Project();
+    const project = new Project({ useInMemoryFileSystem: true });
     const sourceFile = project.createSourceFile('foo.ts', sourceFileContent);
 
     const decorator = sourceFile.getClasses()[0]?.getDecorator('NgModule');
@@ -64,7 +64,7 @@ describe('insertIntoDecoratorArgArray', () => {
       export class AppModule { }
     `;
 
-    const project = new Project();
+    const project = new Project({ useInMemoryFileSystem: true });
     const sourceFile = project.createSourceFile('foo.ts', sourceFileContent);
 
     const decorator = sourceFile.getClasses()[0]?.getDecorator('NgModule');
@@ -95,7 +95,7 @@ describe('deleteFromDecoratorArgArray', () => {
       export class AppModule { }
     `;
 
-    const project = new Project();
+    const project = new Project({ useInMemoryFileSystem: true });
     const sourceFile = project.createSourceFile('foo.ts', sourceFileContent);
 
     const decorator = sourceFile.getClasses()[0]?.getDecorator('NgModule');
@@ -119,7 +119,7 @@ describe('deleteFromDecoratorArgArray', () => {
       export class AppModule { }
     `;
 
-    const project = new Project();
+    const project = new Project({ useInMemoryFileSystem: true });
     const sourceFile = project.createSourceFile('foo.ts', sourceFileContent);
 
     const decorator = sourceFile.getClasses()[0]?.getDecorator('NgModule');

@@ -11,11 +11,8 @@ describe('saveFileChanges', () => {
       formatText: vi.fn(),
       save: vi.fn()
     };
-    const cliOptions = {
-      dryRun: true,
-    };
 
-    const result = await saveFileChanges(sourceFile, cliOptions);
+    const result = await saveFileChanges(sourceFile, { dryRun: true });
 
     expect(sourceFile.save).not.toHaveBeenCalled();
     expect(result).toBe('foo');
@@ -27,11 +24,8 @@ describe('saveFileChanges', () => {
       getFullText: () => 'foo',
       formatText: vi.fn(),
     };
-    const cliOptions = {
-      dryRun: false,
-    };
 
-    const result = await saveFileChanges(sourceFile, cliOptions);
+    const result = await saveFileChanges(sourceFile, { dryRun: false });
 
     expect(sourceFile.save).toHaveBeenCalled();
     expect(result).toBe('foo');

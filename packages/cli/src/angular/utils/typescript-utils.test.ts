@@ -13,7 +13,7 @@ describe('getOrCreateConstructor', () => {
       }
     `;
 
-    const project = new Project();
+    const project = new Project({ useInMemoryFileSystem: true });
     const sourceFile = project.createSourceFile('foo.ts', sourceFileContent);
 
     const actual = getOrCreateConstructor(sourceFile);
@@ -27,7 +27,7 @@ describe('getOrCreateConstructor', () => {
       }
     `;
 
-    const project = new Project();
+    const project = new Project({ useInMemoryFileSystem: true });
     const sourceFile = project.createSourceFile('foo.ts', sourceFileContent);
 
     const actual = getOrCreateConstructor(sourceFile);
@@ -46,7 +46,7 @@ describe('addImportToClass', () => {
       }
     `;
 
-    const project = new Project();
+    const project = new Project({ useInMemoryFileSystem: true });
     const sourceFile = project.createSourceFile('foo.ts', sourceFileContent);
 
     addImportToClass(sourceFile, 'Component', '@angular/core');
