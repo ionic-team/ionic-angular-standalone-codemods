@@ -73,3 +73,9 @@ This project uses [Vitest](https://vitest.dev/) for unit testing.
 This project uses [Prettier](https://prettier.io/) for code formatting.
 
 Run `pnpm run format` to format all files in the project.
+
+### Additional Resources
+
+- [Typescript AST Explorer](https://ts-ast-viewer.com/)
+- [ts-morph API Docs](https://ts-morph.com/)
+- [Clack Prompts Docs](https://github.com/natemoo-re/clack/tree/main/packages/prompts#readme)
