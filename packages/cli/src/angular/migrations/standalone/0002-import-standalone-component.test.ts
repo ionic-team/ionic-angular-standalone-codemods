@@ -1,14 +1,12 @@
-import { describe, it, expect } from 'vitest';
-import { Project } from 'ts-morph';
-import dedent from 'ts-dedent';
+import { describe, it, expect } from "vitest";
+import { Project } from "ts-morph";
+import dedent from "ts-dedent";
 
-import { migrateComponents } from './0002-import-standalone-component';
+import { migrateComponents } from "./0002-import-standalone-component";
 
-describe('migrateComponents', () => {
-
-  describe('standalone angular components', () => {
-
-    it('should migrate components using inline templates', async () => {
+describe("migrateComponents", () => {
+  describe("standalone angular components", () => {
+    it("should migrate components using inline templates", async () => {
       const project = new Project({ useInMemoryFileSystem: true });
 
       const component = `
@@ -35,11 +33,15 @@ describe('migrateComponents', () => {
         export class MyComponent { }
       `;
 
-      const componentSourceFile = project.createSourceFile('foo.component.ts', dedent(component));
+      const componentSourceFile = project.createSourceFile(
+        "foo.component.ts",
+        dedent(component),
+      );
 
       await migrateComponents(project, { dryRun: false });
 
-      expect(dedent(componentSourceFile.getText())).toBe(dedent(`
+      expect(dedent(componentSourceFile.getText())).toBe(
+        dedent(`
         import { Component } from "@angular/core";
         import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel } from "@ionic/angular/standalone";
 
@@ -63,10 +65,11 @@ describe('migrateComponents', () => {
             imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel]
         })
         export class MyComponent { }
-      `));
+      `),
+      );
     });
 
-    it('should migrate components using external templates', async () => {
+    it("should migrate components using external templates", async () => {
       const project = new Project({ useInMemoryFileSystem: true });
 
       const component = `
@@ -95,12 +98,16 @@ describe('migrateComponents', () => {
       </ion-content>
       `;
 
-      const componentSourceFile = project.createSourceFile('foo.component.ts', dedent(component));
-      project.createSourceFile('foo.component.html', dedent(template));
+      const componentSourceFile = project.createSourceFile(
+        "foo.component.ts",
+        dedent(component),
+      );
+      project.createSourceFile("foo.component.html", dedent(template));
 
       await migrateComponents(project, { dryRun: false });
 
-      expect(dedent(componentSourceFile.getText())).toBe(dedent(`
+      expect(dedent(componentSourceFile.getText())).toBe(
+        dedent(`
         import { Component } from "@angular/core";
         import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel } from "@ionic/angular/standalone";
 
@@ -111,10 +118,11 @@ describe('migrateComponents', () => {
             imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel]
         })
         export class MyComponent { }
-      `));
+      `),
+      );
     });
 
-    it('should detect and import icons used in the template', async () => {
+    it("should detect and import icons used in the template", async () => {
       const project = new Project({ useInMemoryFileSystem: true });
 
       const component = `
@@ -128,11 +136,15 @@ describe('migrateComponents', () => {
         export class MyComponent { }
       `;
 
-      const componentSourceFile = project.createSourceFile('foo.component.ts', dedent(component));
+      const componentSourceFile = project.createSourceFile(
+        "foo.component.ts",
+        dedent(component),
+      );
 
       await migrateComponents(project, { dryRun: false });
 
-      expect(dedent(componentSourceFile.getText())).toBe(dedent(`
+      expect(dedent(componentSourceFile.getText())).toBe(
+        dedent(`
         import { Component } from "@angular/core";
         import { addIcons } from "ionicons";
         import { logoIonic } from "ionicons/icons";
@@ -149,14 +161,13 @@ describe('migrateComponents', () => {
                 addIcons({ logoIonic });
             }
         }
-      `));
+      `),
+      );
     });
-
   });
 
-  describe('single component angular modules', () => {
-
-    it('should migrate angular module with Ionic components', async () => {
+  describe("single component angular modules", () => {
+    it("should migrate angular module with Ionic components", async () => {
       const project = new Project({ useInMemoryFileSystem: true });
 
       const component = `
@@ -194,12 +205,16 @@ describe('migrateComponents', () => {
       export class MyComponentModule { }
       `;
 
-      project.createSourceFile('foo.component.ts', dedent(component));
-      const moduleSourceFile = project.createSourceFile('foo.module.ts', dedent(module));
+      project.createSourceFile("foo.component.ts", dedent(component));
+      const moduleSourceFile = project.createSourceFile(
+        "foo.module.ts",
+        dedent(module),
+      );
 
       await migrateComponents(project, { dryRun: false });
 
-      expect(dedent(moduleSourceFile.getText())).toBe(dedent(`
+      expect(dedent(moduleSourceFile.getText())).toBe(
+        dedent(`
       import { NgModule } from "@angular/core";
       import { MyComponent } from "./foo.component";
       import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel } from "@ionic/angular/standalone";
@@ -210,10 +225,8 @@ describe('migrateComponents', () => {
           exports: [MyComponent]
       })
       export class MyComponentModule { }
-      `));
-
+      `),
+      );
     });
-
   });
-
 });

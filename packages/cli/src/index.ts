@@ -12,7 +12,7 @@ import {
 import color from "picocolors";
 
 import { Project } from "ts-morph";
-import { existsSync } from 'node:fs';
+import { existsSync } from "node:fs";
 
 import { cwd } from "node:process";
 import { runStandaloneMigration } from "./angular/migrations/standalone";
@@ -25,7 +25,7 @@ const IONIC_REPOSITORY_ISSUES_URL =
 async function main() {
   console.clear();
 
-  intro('Ionic Angular Standalone Codemods');
+  intro("Ionic Angular Standalone Codemods");
   intro(
     "This utility will migrate your Ionic Angular project to use the new standalone components from Ionic Framework v7.5.0.",
   );
@@ -56,7 +56,7 @@ async function main() {
       }),
   });
 
-  if (typeof cli.dryRun !== 'boolean') {
+  if (typeof cli.dryRun !== "boolean") {
     // User aborted the prompt
     return;
   }
@@ -84,7 +84,7 @@ async function main() {
       project,
       cliOptions: cli,
       dir: cli.dir,
-      spinner: s
+      spinner: s,
     });
   } catch (e: any) {
     s.stop("An error occurred during the migration.", 1);

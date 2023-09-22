@@ -1,12 +1,15 @@
-import { describe, it, expect } from 'vitest';
-import { Project } from 'ts-morph';
-import { dedent } from 'ts-dedent';
+import { describe, it, expect } from "vitest";
+import { Project } from "ts-morph";
+import { dedent } from "ts-dedent";
 
-import { getDecoratorArgument, insertIntoDecoratorArgArray, deleteFromDecoratorArgArray } from './decorator-utils';
+import {
+  getDecoratorArgument,
+  insertIntoDecoratorArgArray,
+  deleteFromDecoratorArgArray,
+} from "./decorator-utils";
 
-describe('getDecoratorArgument', () => {
-
-  it('should return the decorator argument', () => {
+describe("getDecoratorArgument", () => {
+  it("should return the decorator argument", () => {
     const sourceFileContent = `
       @NgModule({
         imports: ['foo'],
@@ -16,22 +19,20 @@ describe('getDecoratorArgument', () => {
     `;
 
     const project = new Project({ useInMemoryFileSystem: true });
-    const sourceFile = project.createSourceFile('foo.ts', sourceFileContent);
+    const sourceFile = project.createSourceFile("foo.ts", sourceFileContent);
 
-    const decorator = sourceFile.getClasses()[0]?.getDecorator('NgModule');
+    const decorator = sourceFile.getClasses()[0]?.getDecorator("NgModule");
 
-    const imports = getDecoratorArgument(decorator!, 'imports');
-    const exports = getDecoratorArgument(decorator!, 'exports');
+    const imports = getDecoratorArgument(decorator!, "imports");
+    const exports = getDecoratorArgument(decorator!, "exports");
 
     expect(imports?.getText()).toBe(`imports: ['foo']`);
     expect(exports?.getText()).toBe(`exports: ['bar']`);
   });
-
 });
 
-describe('insertIntoDecoratorArgArray', () => {
-
-  it('should insert into an existing array', () => {
+describe("insertIntoDecoratorArgArray", () => {
+  it("should insert into an existing array", () => {
     const sourceFileContent = `
       @NgModule({
         imports: ['foo'],
@@ -41,21 +42,22 @@ describe('insertIntoDecoratorArgArray', () => {
     `;
 
     const project = new Project({ useInMemoryFileSystem: true });
-    const sourceFile = project.createSourceFile('foo.ts', sourceFileContent);
+    const sourceFile = project.createSourceFile("foo.ts", sourceFileContent);
 
-    const decorator = sourceFile.getClasses()[0]?.getDecorator('NgModule');
+    const decorator = sourceFile.getClasses()[0]?.getDecorator("NgModule");
 
-    insertIntoDecoratorArgArray(decorator!, 'imports', `'baz'`);
+    insertIntoDecoratorArgArray(decorator!, "imports", `'baz'`);
 
-    expect(dedent(decorator?.getText()!)).toBe(dedent(`
+    expect(dedent(decorator?.getText()!)).toBe(
+      dedent(`
     @NgModule({
       imports: ['foo', 'baz'],
       exports: ['bar']
-    })`
-    ))
+    })`),
+    );
   });
 
-  it('should create an array if it does not exist', () => {
+  it("should create an array if it does not exist", () => {
     const sourceFileContent = `
       @NgModule({
         imports: ['foo'],
@@ -65,28 +67,27 @@ describe('insertIntoDecoratorArgArray', () => {
     `;
 
     const project = new Project({ useInMemoryFileSystem: true });
-    const sourceFile = project.createSourceFile('foo.ts', sourceFileContent);
+    const sourceFile = project.createSourceFile("foo.ts", sourceFileContent);
 
-    const decorator = sourceFile.getClasses()[0]?.getDecorator('NgModule');
+    const decorator = sourceFile.getClasses()[0]?.getDecorator("NgModule");
 
-    insertIntoDecoratorArgArray(decorator!, 'declarations', `'baz'`);
+    insertIntoDecoratorArgArray(decorator!, "declarations", `'baz'`);
 
     sourceFile.formatText();
 
-    expect(dedent(decorator?.getText()!)).toBe(dedent(`
+    expect(dedent(decorator?.getText()!)).toBe(
+      dedent(`
     @NgModule({
         imports: ['foo'],
         exports: ['bar'],
         declarations: ['baz']
-    })`
-    ));
+    })`),
+    );
   });
-
 });
 
-describe('deleteFromDecoratorArgArray', () => {
-
-  it('should delete from an existing array', () => {
+describe("deleteFromDecoratorArgArray", () => {
+  it("should delete from an existing array", () => {
     const sourceFileContent = `
       @NgModule({
         imports: ['foo'],
@@ -96,21 +97,22 @@ describe('deleteFromDecoratorArgArray', () => {
     `;
 
     const project = new Project({ useInMemoryFileSystem: true });
-    const sourceFile = project.createSourceFile('foo.ts', sourceFileContent);
+    const sourceFile = project.createSourceFile("foo.ts", sourceFileContent);
 
-    const decorator = sourceFile.getClasses()[0]?.getDecorator('NgModule');
+    const decorator = sourceFile.getClasses()[0]?.getDecorator("NgModule");
 
-    deleteFromDecoratorArgArray(decorator!, 'imports', `'foo'`);
+    deleteFromDecoratorArgArray(decorator!, "imports", `'foo'`);
 
-    expect(dedent(decorator?.getText()!)).toBe(dedent(`
+    expect(dedent(decorator?.getText()!)).toBe(
+      dedent(`
     @NgModule({
       imports: [],
       exports: ['bar']
-    })`
-    ))
+    })`),
+    );
   });
 
-  it('should do nothing if the array does not exist', () => {
+  it("should do nothing if the array does not exist", () => {
     const sourceFileContent = `
       @NgModule({
         imports: ['foo'],
@@ -120,18 +122,18 @@ describe('deleteFromDecoratorArgArray', () => {
     `;
 
     const project = new Project({ useInMemoryFileSystem: true });
-    const sourceFile = project.createSourceFile('foo.ts', sourceFileContent);
+    const sourceFile = project.createSourceFile("foo.ts", sourceFileContent);
 
-    const decorator = sourceFile.getClasses()[0]?.getDecorator('NgModule');
+    const decorator = sourceFile.getClasses()[0]?.getDecorator("NgModule");
 
-    deleteFromDecoratorArgArray(decorator!, 'declarations', `'baz'`);
+    deleteFromDecoratorArgArray(decorator!, "declarations", `'baz'`);
 
-    expect(dedent(decorator?.getText()!)).toBe(dedent(`
+    expect(dedent(decorator?.getText()!)).toBe(
+      dedent(`
     @NgModule({
       imports: ['foo'],
       exports: ['bar']
-    })`
-    ))
+    })`),
+    );
   });
-
 });

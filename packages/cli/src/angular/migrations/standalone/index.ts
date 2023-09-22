@@ -6,7 +6,7 @@ import { migrateComponents } from "./0002-import-standalone-component";
 import { migrateBootstrapApplication } from "./0003-migrate-bootstrap-application";
 import { migrateAngularJsonAssets } from "./0005-migrate-angular-json-assets";
 
-import { group, confirm, log, spinner } from '@clack/prompts';
+import { group, confirm, log, spinner } from "@clack/prompts";
 import { getActualPackageVersion } from "../../utils/package-utils";
 
 interface StandaloneMigrationOptions {
@@ -32,7 +32,7 @@ export const runStandaloneMigration = async ({
   project,
   cliOptions,
   dir,
-  spinner
+  spinner,
 }: StandaloneMigrationOptions) => {
   const hasIonicAngularMinVersion = await checkInstalledIonicVersion(dir);
   if (!hasIonicAngularMinVersion) {
@@ -69,34 +69,44 @@ export const runStandaloneMigration = async ({
  * @returns True if the installed version of @ionic/angular is at least 7.5.0 or the user opted to continue, false otherwise.
  */
 async function checkInstalledIonicVersion(dir: string) {
-  const ionicAngularVersion = await getActualPackageVersion(dir, '@ionic/angular');
+  const ionicAngularVersion = await getActualPackageVersion(
+    dir,
+    "@ionic/angular",
+  );
 
   if (!ionicAngularVersion) {
-    log.warn('We could not detect the version of @ionic/angular installed in your project.');
-    log.warn('This migration requires @ionic/angular version of 7.5.0 or later.');
-    log.warn('Do you want to proceed anyway?');
+    log.warn(
+      "We could not detect the version of @ionic/angular installed in your project.",
+    );
+    log.warn(
+      "This migration requires @ionic/angular version of 7.5.0 or later.",
+    );
+    log.warn("Do you want to proceed anyway?");
 
     const { continue: shouldContinue } = await group({
-      continue: () => confirm({
-        message: 'Continue?',
-        initialValue: false
-      }),
+      continue: () =>
+        confirm({
+          message: "Continue?",
+          initialValue: false,
+        }),
     });
 
-    if (!shouldContinue || typeof shouldContinue !== 'boolean') {
-      log.info('Migration canceled.');
+    if (!shouldContinue || typeof shouldContinue !== "boolean") {
+      log.info("Migration canceled.");
       return false;
     }
   } else {
-    const [major, minor] = ionicAngularVersion.split('.');
+    const [major, minor] = ionicAngularVersion.split(".");
     const majorVersion = parseInt(major);
     const minorVersion = parseInt(minor);
 
     const logVersionError = () => {
-      log.error('This migration requires an @ionic/angular version of v7.5.0 or greater.');
-      log.error('Install the latest version of @ionic/angular and try again.');
-      log.error('Migration canceled.');
-    }
+      log.error(
+        "This migration requires an @ionic/angular version of v7.5.0 or greater.",
+      );
+      log.error("Install the latest version of @ionic/angular and try again.");
+      log.error("Migration canceled.");
+    };
 
     if (majorVersion < 7) {
       logVersionError();

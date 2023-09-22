@@ -3,7 +3,10 @@ import { CliOptions } from "../../../types/cli-options";
 
 // @ts-ignore
 import { parse } from "@angular-eslint/template-parser";
-import { deleteFromDecoratorArgArray, getDecoratorArgument } from "../../utils/decorator-utils";
+import {
+  deleteFromDecoratorArgArray,
+  getDecoratorArgument,
+} from "../../utils/decorator-utils";
 
 import { log } from "@clack/prompts";
 import {
@@ -156,13 +159,12 @@ async function migrateAngularComponentClass(
 }
 
 function removeIonicModuleFromNgModule(ngModuleSourceFile: SourceFile) {
-  const ionicModuleImportDeclaration = ngModuleSourceFile.getImportDeclaration(
-    "@ionic/angular",
-  );
+  const ionicModuleImportDeclaration =
+    ngModuleSourceFile.getImportDeclaration("@ionic/angular");
 
-  const ionicModuleImportSpecifier = ionicModuleImportDeclaration?.getNamedImports().find(
-    (n) => n.getName() === "IonicModule",
-  );
+  const ionicModuleImportSpecifier = ionicModuleImportDeclaration
+    ?.getNamedImports()
+    .find((n) => n.getName() === "IonicModule");
 
   if (ionicModuleImportSpecifier) {
     // Remove the IonicModule import specifier.

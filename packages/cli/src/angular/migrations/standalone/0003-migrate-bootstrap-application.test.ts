@@ -1,12 +1,11 @@
-import { describe, it, expect } from 'vitest';
-import { Project } from 'ts-morph';
-import { dedent } from 'ts-dedent';
+import { describe, it, expect } from "vitest";
+import { Project } from "ts-morph";
+import { dedent } from "ts-dedent";
 
-import { migrateBootstrapApplication } from './0003-migrate-bootstrap-application';
+import { migrateBootstrapApplication } from "./0003-migrate-bootstrap-application";
 
-describe('migrateBootstrapApplication', () => {
-
-  it('should migrate bootstrapApplication', async () => {
+describe("migrateBootstrapApplication", () => {
+  it("should migrate bootstrapApplication", async () => {
     const project = new Project({ useInMemoryFileSystem: true });
 
     const main = dedent(`
@@ -32,11 +31,12 @@ describe('migrateBootstrapApplication', () => {
     });
     `);
 
-    const mainSourceFile = project.createSourceFile('src/main.ts', main);
+    const mainSourceFile = project.createSourceFile("src/main.ts", main);
 
     await migrateBootstrapApplication(project, { dryRun: false });
 
-    expect(dedent(mainSourceFile.getText())).toBe(dedent(`
+    expect(dedent(mainSourceFile.getText())).toBe(
+      dedent(`
     import { enableProdMode, importProvidersFrom } from '@angular/core';
     import { bootstrapApplication } from '@angular/platform-browser';
     import { RouteReuseStrategy, provideRouter } from '@angular/router';
@@ -57,7 +57,7 @@ describe('migrateBootstrapApplication', () => {
             provideIonicAngular({ mode: 'ios' })
         ],
     });
-    `));
+    `),
+    );
   });
-
 });
