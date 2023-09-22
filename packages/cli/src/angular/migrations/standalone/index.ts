@@ -10,13 +10,21 @@ import { group, confirm, log, spinner } from '@clack/prompts';
 import { getActualPackageVersion } from "../../utils/package-utils";
 
 interface StandaloneMigrationOptions {
+  /**
+   * The project instance. Contains the source files to be migrated.
+   */
   project: Project;
+  /**
+   * The user-specified CLI options.
+   */
   cliOptions: CliOptions;
   /**
    * The user-specified directory for running the migration.
    */
   dir: string;
-
+  /**
+   * The spinner instance for logging progress.
+   */
   spinner: ReturnType<typeof spinner>;
 }
 
@@ -33,13 +41,15 @@ export const runStandaloneMigration = async ({
 
   spinner.start(`Migrating project located at: ${dir}`);
 
+  // Migrate projects using an AppModule
   await migrateAppModule(project, cliOptions);
+  // Migrate standalone projects using bootstrapApplication
   await migrateBootstrapApplication(project, cliOptions);
-
+  // Migrate components using Ionic components
   await migrateComponents(project, cliOptions);
-
+  // Migrate import statements to @ionic/angular/standalone
   await migrateImportStatements(project, cliOptions);
-
+  // Migrate the assets array in angular.json
   await migrateAngularJsonAssets(project, cliOptions);
 
   spinner.stop(`Project migration at ${dir} completed successfully.`);
@@ -51,6 +61,13 @@ export const runStandaloneMigration = async ({
   return true;
 };
 
+/**
+ * Verifies that the installed version of @ionic/angular is at least 7.5.0.
+ * If the version cannot be detected, the user is prompted to continue.
+ * If the version is less than 7.5.0, the user is prompted to install the latest version.
+ * @param dir The directory of the project to be migrated.
+ * @returns True if the installed version of @ionic/angular is at least 7.5.0 or the user opted to continue, false otherwise.
+ */
 async function checkInstalledIonicVersion(dir: string) {
   const ionicAngularVersion = await getActualPackageVersion(dir, '@ionic/angular');
 
@@ -78,7 +95,7 @@ async function checkInstalledIonicVersion(dir: string) {
     const logVersionError = () => {
       log.error('This migration requires an @ionic/angular version of v7.5.0 or greater.');
       log.error('Install the latest version of @ionic/angular and try again.');
-      log.error('Exiting migration.');
+      log.error('Migration canceled.');
     }
 
     if (majorVersion < 7) {

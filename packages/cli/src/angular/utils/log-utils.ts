@@ -7,7 +7,7 @@ import { log } from "@clack/prompts";
  * Saves the changes to a source file. If the `dryRun` option is set, the changes will be logged to the console instead.
  * @param sourceFile The source file to save.
  * @param cliOptions The CLI options.
- * @returns A promise that resolves when the file has been saved.
+ * @returns A promise that resolves the full text of the source file after saving.
  */
 export async function saveFileChanges(
   sourceFile: SourceFile,
