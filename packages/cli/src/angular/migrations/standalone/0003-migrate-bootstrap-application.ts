@@ -138,7 +138,7 @@ export const migrateBootstrapApplication = async (
 
       migrateIonicAngularImportDeclarations(sourceFile);
 
-      await saveFileChanges(sourceFile, cliOptions);
+      return await saveFileChanges(sourceFile, cliOptions);
     }
   }
 };
