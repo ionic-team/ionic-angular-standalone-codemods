@@ -55,7 +55,7 @@ async function main() {
     dir: () =>
       text({
         message:
-          "What is the path to your project? Leave blank to use the current working directory.",
+          "What is the path to your project? Defaults to use the current working directory.",
         initialValue: cwd(),
       }),
   });
