@@ -8,6 +8,7 @@
     },
     "lint": {},
     "test": {},
+    "test:watch": {},
     "dev": {
       "cache": false,
       "persistent": true

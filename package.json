@@ -5,7 +5,8 @@
     "dev": "turbo run dev --no-daemon",
     "lint": "turbo run lint --no-daemon",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "test": "turbo run test --filter='./packages/*' --no-daemon"
+    "test": "turbo run test --filter='./packages/*' --no-daemon",
+    "test:watch": "turbo run test:watch --filter='./packages/*' --no-daemon"
   },
   "devDependencies": {
     "eslint": "^8.48.0",
