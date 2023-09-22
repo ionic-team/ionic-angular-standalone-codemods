@@ -30,6 +30,6 @@ export const migrateAngularJsonAssets = async (project: Project, cliOptions: Cli
 
   angularJsonSourceFile.replaceWithText(JSON.stringify(angularJson, null, 2));
 
-  await saveFileChanges(angularJsonSourceFile, cliOptions);
+  return await saveFileChanges(angularJsonSourceFile, cliOptions);
 
 }
