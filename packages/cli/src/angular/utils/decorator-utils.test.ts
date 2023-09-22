@@ -7,13 +7,15 @@ import {
   insertIntoDecoratorArgArray,
   deleteFromDecoratorArgArray,
 } from "./decorator-utils";
+import exp from "constants";
 
 describe("getDecoratorArgument", () => {
   it("should return the decorator argument", () => {
     const sourceFileContent = `
       @NgModule({
         imports: ['foo'],
-        exports: ['bar']
+        exports: ['bar'],
+        declarations: []
       })
       export class AppModule { }
     `;
@@ -25,9 +27,27 @@ describe("getDecoratorArgument", () => {
 
     const imports = getDecoratorArgument(decorator!, "imports");
     const exports = getDecoratorArgument(decorator!, "exports");
+    const declarations = getDecoratorArgument(decorator!, "declarations");
 
     expect(imports?.getText()).toBe(`imports: ['foo']`);
     expect(exports?.getText()).toBe(`exports: ['bar']`);
+    expect(declarations?.getText()).toBe(`declarations: []`);
+  });
+
+  it("should return undefined if the decorator does not have arguments", () => {
+    const sourceFileContent = `
+    @NgModule()
+    export class AppModule { }
+  `;
+
+    const project = new Project({ useInMemoryFileSystem: true });
+    const sourceFile = project.createSourceFile("foo.ts", sourceFileContent);
+
+    const decorator = sourceFile.getClasses()[0]?.getDecorator("NgModule");
+
+    const imports = getDecoratorArgument(decorator!, "imports");
+
+    expect(imports).toBe(undefined);
   });
 });
 
