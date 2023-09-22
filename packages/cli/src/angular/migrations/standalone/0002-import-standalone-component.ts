@@ -3,7 +3,7 @@ import { CliOptions } from "../../../types/cli-options";
 
 // @ts-ignore
 import { parse } from "@angular-eslint/template-parser";
-import { getDecoratorArgument } from "../../utils/decorator-utils";
+import { deleteFromDecoratorArgArray, getDecoratorArgument } from "../../utils/decorator-utils";
 
 import { log } from "@clack/prompts";
 import {
@@ -127,6 +127,8 @@ async function migrateAngularComponentClass(
       );
       addImportToNgModuleDecorator(ngModuleSourceFile, componentClassName);
 
+      removeIonicModuleFromNgModule(ngModuleSourceFile);
+
       modifiedNgModule = true;
     }
   }
@@ -150,6 +152,34 @@ async function migrateAngularComponentClass(
 
   if (modifiedNgModule && ngModuleSourceFile) {
     await saveFileChanges(ngModuleSourceFile, cliOptions);
+  }
+}
+
+function removeIonicModuleFromNgModule(ngModuleSourceFile: SourceFile) {
+  const ionicModuleImportDeclaration = ngModuleSourceFile.getImportDeclaration(
+    "@ionic/angular",
+  );
+
+  const ionicModuleImportSpecifier = ionicModuleImportDeclaration?.getNamedImports().find(
+    (n) => n.getName() === "IonicModule",
+  );
+
+  if (ionicModuleImportSpecifier) {
+    // Remove the IonicModule import specifier.
+    ionicModuleImportSpecifier.remove();
+  }
+  if (ionicModuleImportDeclaration?.getNamedImports().length === 0) {
+    // Remove the entire import statement if there are no more named imports.
+    ionicModuleImportDeclaration.remove();
+  }
+
+  const ngModuleDecorator = ngModuleSourceFile
+    .getClasses()[0]
+    .getDecorator("NgModule");
+
+  if (ngModuleDecorator) {
+    deleteFromDecoratorArgArray(ngModuleDecorator, "imports", "IonicModule");
+    deleteFromDecoratorArgArray(ngModuleDecorator, "exports", "IonicModule");
   }
 }
 

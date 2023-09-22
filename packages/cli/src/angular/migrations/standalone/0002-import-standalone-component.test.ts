@@ -6,10 +6,10 @@ import dedent from 'ts-dedent';
 
 describe('migrateComponents', () => {
 
-  describe('migrating projects using ionic components', () => {
+  describe('standalone angular components', () => {
 
     it('should migrate components using inline templates', async () => {
-      const project = new Project();
+      const project = new Project({ useInMemoryFileSystem: true });
 
       const component = `
         import { Component } from "@angular/core";
@@ -114,8 +114,8 @@ describe('migrateComponents', () => {
       `));
     });
 
-    it.only('should detect and import icons used in the template', async () => {
-      const project = new Project();
+    it('should detect and import icons used in the template', async () => {
+      const project = new Project({ useInMemoryFileSystem: true });
 
       const component = `
         import { Component } from "@angular/core";
@@ -154,5 +154,70 @@ describe('migrateComponents', () => {
 
   });
 
+  describe('single component angular modules', () => {
+
+    it('should migrate angular module with Ionic components', async () => {
+      const project = new Project({ useInMemoryFileSystem: true });
+
+      const component = `
+      import { Component } from "@angular/core";
+      
+      @Component({
+        selector: 'my-component',
+        template: \`
+          <ion-header>
+            <ion-toolbar>
+              <ion-title>My Component</ion-title>
+            </ion-toolbar>
+          </ion-header>
+          <ion-content>
+            <ion-list>
+              <ion-item>
+                <ion-label>My Item</ion-label>
+              </ion-item>
+            </ion-list>
+          </ion-content>
+        \`
+      })
+      export class MyComponent { }`;
+      const module = `
+      import { NgModule } from "@angular/core";
+      import { IonicModule } from "@ionic/angular";
+
+      import { MyComponent } from "./foo.component";
+      
+      @NgModule({
+        imports: [IonicModule],
+        declarations: [MyComponent],
+        exports: [MyComponent]
+      })
+      export class MyComponentModule { }
+      `;
+
+      const componentSourceFile = project.createSourceFile('foo.component.ts', dedent(component));
+      const moduleSourceFile = project.createSourceFile('foo.module.ts', dedent(module));
+
+      await migrateComponents(project, { dryRun: false });
+
+      const modifiedModule = project.getSourceFile('foo.module.ts');
+
+      const result = dedent(modifiedModule!.getFullText())
+
+      expect(result).toBe(dedent(`
+      import { NgModule } from "@angular/core";
+      import { MyComponent } from "./foo.component";
+      import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel } from "@ionic/angular/standalone";
+      
+      @NgModule({
+          imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel],
+          declarations: [MyComponent],
+          exports: [MyComponent]
+      })
+      export class MyComponentModule { }
+      `));
+
+    });
+
+  });
 
 });
