@@ -25,21 +25,17 @@ const IONIC_REPOSITORY_ISSUES_URL =
 async function main() {
   console.clear();
 
-  intro(`${color.bgBlue(color.white("Ionic Migrate"))}`);
+  intro('Ionic Angular Standalone Codemods');
   intro(
-    `${color.bgBlue(
-      color.white(
-        "This utility will migrate your Ionic Angular project to use the new standalone components from Ionic Framework 7.5.0.",
-      ),
-    )}`,
+    "This utility will migrate your Ionic Angular project to use the new standalone components from Ionic Framework v7.5.0.",
   );
 
   log.warning("--------------------------------------------------");
   log.warning(
-    "WARNING: This utility is experimental and developers should manually review the changes made by this utility.",
+    "⚠️  This utility is experimental. Always review the changes made before committing them to your project. ⚠️",
   );
   log.warning(
-    `If you want to manually migrate your project, please see the migration guide at: ${color.underline(
+    `For manual migration, see the guide at: ${color.underline(
       IONIC_MIGRATION_GUIDE_URL,
     )}`,
   );
@@ -49,19 +45,21 @@ async function main() {
     dryRun: () =>
       confirm({
         message:
-          "Do you want to run this migration as a dry run? This will not write any changes to your project.",
+          "Would you like to run this migration as a dry run? No changes will be written to your project.",
         initialValue: true,
       }),
     dir: () =>
       text({
         message:
-          "What is the path to your project? Defaults to use the current working directory.",
+          "Please enter the path to your project (default is the current working directory):",
         initialValue: cwd(),
       }),
   });
 
-  const s = spinner();
-  s.start(`Migrating project at ${cli.dir}`);
+  if (typeof cli.dryRun !== 'boolean') {
+    // User aborted the prompt
+    return;
+  }
 
   let project: Project;
 
@@ -73,6 +71,8 @@ async function main() {
     project = new Project();
   }
 
+  const s = spinner();
+
   project.addSourceFilesAtPaths([
     `${cli.dir}/src/**/*.html`,
     `${cli.dir}/src/**/*.ts`,
@@ -80,32 +80,19 @@ async function main() {
   ]);
 
   try {
-    const success = await runStandaloneMigration({
+    await runStandaloneMigration({
       project,
       cliOptions: cli,
       dir: cli.dir,
+      spinner: s
     });
-
-    if (success) {
-      s.stop(`Successfully migrated project at ${cli.dir}`);
-
-      log.info(
-        "We recommend that you review the changes made by this migration and run any code formatting (prettier) before committing them to your project.",
-      );
-    } else {
-      s.stop();
-    }
-
-    outro(`${color.bgBlue(color.white("Migration completed!"))}`);
   } catch (e: any) {
-    s.stop();
-
-    log.error("An error occurred while migrating your project.");
+    s.stop("An error occurred during the migration.", 1);
     log.error(e.message);
   }
 
-  log.info(
-    `If you find an issue with the migration utility, please report it at: ${color.underline(
+  outro(
+    `If you encounter any issues with this migration utility, please report them at: ${color.underline(
       IONIC_REPOSITORY_ISSUES_URL,
     )}`,
   );
