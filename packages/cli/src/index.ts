@@ -12,7 +12,7 @@ import {
 import color from "picocolors";
 
 import { Project } from "ts-morph";
-import * as fs from 'node:fs';
+import { existsSync } from 'node:fs';
 
 import { cwd } from "node:process";
 import { runStandaloneMigration } from "./angular/migrations/standalone";
@@ -65,7 +65,7 @@ async function main() {
 
   let project: Project;
 
-  if (fs.existsSync(`${cli.dir}/tsconfig.json`)) {
+  if (existsSync(`${cli.dir}/tsconfig.json`)) {
     project = new Project({
       tsConfigFilePath: `${cli.dir}/tsconfig.json`,
     });
