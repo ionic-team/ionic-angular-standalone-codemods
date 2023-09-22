@@ -15,7 +15,9 @@
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "watch": "pnpm run build --watch",
     "dev": "pnpm run build --watch",
-    "test": "vitest"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "devDependencies": {
     "eslint": "^8.0.0",
