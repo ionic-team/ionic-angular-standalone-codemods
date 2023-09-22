@@ -26,7 +26,7 @@ import {
 } from "../../utils/typescript-utils";
 import { saveFileChanges } from "../../utils/log-utils";
 
-export const parseAngularComponentTemplates = async (
+export const migrateComponents = async (
   project: Project,
   cliOptions: CliOptions,
 ) => {
@@ -50,7 +50,7 @@ export const parseAngularComponentTemplates = async (
             cliOptions,
           );
 
-          await saveFileChanges(tsSourceFile, cliOptions);
+          return await saveFileChanges(tsSourceFile, cliOptions);
         }
       }
     } else if (sourceFile.getFilePath().endsWith(".ts")) {
@@ -71,7 +71,7 @@ export const parseAngularComponentTemplates = async (
         );
 
         if (ionicComponents.length > 0 || ionIcons.length > 0) {
-          await saveFileChanges(sourceFile, cliOptions);
+          return await saveFileChanges(sourceFile, cliOptions);
         }
       }
     }
@@ -265,8 +265,20 @@ function getComponentTemplateAsString(sourceFile: SourceFile) {
       return;
     }
 
-    return templatePropertyAssignment
+    // Usage: template: ``
+    const templateLiteral = templatePropertyAssignment
       .getDescendantsOfKind(SyntaxKind.NoSubstitutionTemplateLiteral)[0]
       ?.getLiteralValue();
+
+    if (templateLiteral) {
+      return templateLiteral;
+    }
+
+    // Usage: template: ""
+    const stringLiteral = templatePropertyAssignment
+      .getDescendantsOfKind(SyntaxKind.StringLiteral)[0]
+      ?.getLiteralText();
+
+    return stringLiteral;
   }
 }
