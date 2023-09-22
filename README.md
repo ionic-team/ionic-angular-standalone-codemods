@@ -1,9 +1,43 @@
-# Ionic Angular Standalone Codemods
+<p align="center">
+  <a href="#">
+    <img alt="Ionic" src="https://github.com/ionic-team/ionic-angular-standalone-codemods/blob/main/.github/assets/logo.png?raw=true" width="60" />
+  </a>
+</p>
+
+<h1 align="center">
+  Ionic Angular Standalone Codemods
+</h1>
+
+<p align="center">
+Code mods to migrate an Ionic Angular application to use the new standalone components.
+</p>
+
+<p align="center">
+  <a href="https://github.com/ionic-team/ionic-angular-standalone-codemods/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="Ionic Angular Standalone Codemods is released under the MIT license." />
+  </a>
+  <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs welcome!" />
+  <a href="https://twitter.com/Ionicframework">
+    <img src="https://img.shields.io/twitter/follow/ionicframework.svg?label=Follow%20@IonicFramework" alt="Follow @IonicFramework">
+  </a>
+  <a href="https://ionic.link/discord">
+    <img src="https://img.shields.io/discord/520266681499779082?color=7289DA&label=%23ionic&logo=discord&logoColor=white" alt="Official Ionic Discord" />
+  </a>
+</p>
+
+<h2 align="center">
+  <a href="https://blog.ionicframework.com/">Blog</a>
+  <br />
+  Community:
+  <a href="https://ionic.link/discord">Discord</a>
+  <span> · </span>
+  <a href="https://forum.ionicframework.com/">Forums</a>
+  <span> · </span>
+  <a href="https://twitter.com/Ionicframework">Twitter</a>
+</h2>
 
 > [!WARNING]
 > This project is experimental. Review all changes before committing them to your project.
-
-Code mods to migrate an Ionic Angular application to use the new standalone components.
 
 If you run into any issues while using this project, please open an issue on this repository. If you are unable to provide a reproduction project, please provide relevant code snippets to help us reproduce the issue.
 
