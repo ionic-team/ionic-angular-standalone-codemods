@@ -117,8 +117,8 @@ async function migrateAngularComponentClass(
     if (isAngularComponentStandalone(sourceFile)) {
       const componentClassName = kebabCaseToPascalCase(ionicComponent);
       addImportToComponentDecorator(sourceFile, componentClassName);
-      removeImportFromComponentDecorator(sourceFile, 'IonicModule');
-      removeImportFromClass(sourceFile, 'IonicModule', '@ionic/angular');
+      removeImportFromComponentDecorator(sourceFile, "IonicModule");
+      removeImportFromClass(sourceFile, "IonicModule", "@ionic/angular");
       addImportToClass(
         sourceFile,
         componentClassName,

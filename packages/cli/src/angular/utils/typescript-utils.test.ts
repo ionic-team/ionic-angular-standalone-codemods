@@ -2,7 +2,11 @@ import { describe, it, expect } from "vitest";
 import { Project } from "ts-morph";
 import { dedent } from "ts-dedent";
 
-import { getOrCreateConstructor, addImportToClass, removeImportFromClass } from "./typescript-utils";
+import {
+  getOrCreateConstructor,
+  addImportToClass,
+  removeImportFromClass,
+} from "./typescript-utils";
 
 describe("getOrCreateConstructor", () => {
   it("should return the existing constructor", () => {
@@ -111,7 +115,6 @@ describe("addImportToClass", () => {
 });
 
 describe("removeImportFromClass", () => {
-
   it("should remove an import from a class", () => {
     const sourceFileContent = `
       import { Component } from "@angular/core";
