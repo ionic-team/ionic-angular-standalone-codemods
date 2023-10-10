@@ -123,6 +123,29 @@ export function addImportToComponentDecorator(
 }
 
 /**
+ * Removes an import from the imports array in the Component decorator.
+ * @param sourceFile The source file to remove the import from.
+ * @param importName The name of the import to remove.
+ */
+export function removeImportFromComponentDecorator(
+  sourceFile: SourceFile,
+  importName: string,
+) {
+  if (!isAngularComponentStandalone(sourceFile)) {
+    console.warn(
+      "[Ionic Dev] Cannot remove import from component decorator. Component is not standalone.",
+    );
+    return;
+  }
+
+  const componentDecorator = getAngularComponentDecorator(sourceFile)!;
+
+  deleteFromDecoratorArgArray(componentDecorator, "imports", importName);
+
+  sourceFile.formatText();
+}
+
+/**
  * Adds a new import to the imports array in the NgModule decorator.
  * @param sourceFile The source file to add the import to.
  * @param importName The name of the import to add.
