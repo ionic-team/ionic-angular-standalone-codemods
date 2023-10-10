@@ -53,3 +53,41 @@ export function addImportToClass(
     addImport(sourceFile, importName, moduleSpecifier);
   }
 }
+
+export function removeImportFromClass(
+  sourceFile: SourceFile,
+  importName: string | string[],
+  moduleSpecifier: string,
+) {
+  const removeImport = (
+    sourceFile: SourceFile,
+    importName: string,
+    moduleSpecifier: string,
+  ) => {
+    const importDeclaration = sourceFile.getImportDeclaration(moduleSpecifier);
+
+    if (!importDeclaration) {
+      return;
+    }
+
+    const importSpecifier = importDeclaration
+      .getNamedImports()
+      .find((n) => n.getName() === importName);
+
+    if (importSpecifier) {
+      importSpecifier.remove();
+    }
+
+    if (importDeclaration.getNamedImports().length === 0) {
+      importDeclaration.remove();
+    }
+  };
+
+  if (Array.isArray(importName)) {
+    importName.forEach((name) => {
+      removeImport(sourceFile, name, moduleSpecifier);
+    });
+  } else {
+    removeImport(sourceFile, importName, moduleSpecifier);
+  }
+}

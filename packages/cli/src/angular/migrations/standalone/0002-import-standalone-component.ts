@@ -17,6 +17,7 @@ import {
   getAngularComponentDecorator,
   isAngularComponentClass,
   isAngularComponentStandalone,
+  removeImportFromComponentDecorator,
 } from "../../utils/angular-utils";
 import { IONIC_COMPONENTS } from "../../utils/ionic-utils";
 import {
@@ -26,6 +27,7 @@ import {
 import {
   addImportToClass,
   getOrCreateConstructor,
+  removeImportFromClass,
 } from "../../utils/typescript-utils";
 import { saveFileChanges } from "../../utils/log-utils";
 
@@ -115,6 +117,8 @@ async function migrateAngularComponentClass(
     if (isAngularComponentStandalone(sourceFile)) {
       const componentClassName = kebabCaseToPascalCase(ionicComponent);
       addImportToComponentDecorator(sourceFile, componentClassName);
+      removeImportFromComponentDecorator(sourceFile, 'IonicModule');
+      removeImportFromClass(sourceFile, 'IonicModule', '@ionic/angular');
       addImportToClass(
         sourceFile,
         componentClassName,

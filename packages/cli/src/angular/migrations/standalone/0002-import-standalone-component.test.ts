@@ -74,11 +74,13 @@ describe("migrateComponents", () => {
 
       const component = `
       import { Component } from "@angular/core";
+      import { IonicModule } from "@ionic/angular";
 
         @Component({
           selector: 'my-component',
           templateUrl: './my-component.component.html',
-          standalone: true
+          standalone: true,
+          imports: [IonicModule]
         }) 
         export class MyComponent { }
       `;
