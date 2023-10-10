@@ -55,7 +55,7 @@ export const migrateComponents = async (
             cliOptions,
           );
 
-          return await saveFileChanges(tsSourceFile, cliOptions);
+          await saveFileChanges(tsSourceFile, cliOptions);
         }
       }
     } else if (sourceFile.getFilePath().endsWith(".ts")) {
@@ -76,7 +76,7 @@ export const migrateComponents = async (
         );
 
         if (ionicComponents.length > 0 || ionIcons.length > 0) {
-          return await saveFileChanges(sourceFile, cliOptions);
+          await saveFileChanges(sourceFile, cliOptions);
         }
       }
     }
