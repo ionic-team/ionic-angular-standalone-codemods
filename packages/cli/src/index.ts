@@ -18,7 +18,7 @@ import { cwd } from "node:process";
 import { runStandaloneMigration } from "./angular/migrations/standalone";
 
 const IONIC_MIGRATION_GUIDE_URL =
-  "https://ionic-docs-git-feature-75-ionic1.vercel.app/docs/angular/build-options#migrating-from-modules-to-standalone"; // TODO update link
+  "https://www.ionicframework.com/docs/angular/build-options#migrating-from-modules-to-standalone";
 const IONIC_REPOSITORY_ISSUES_URL =
   "https://github.com/ionic-team/ionic-angular-standalone-codemods/issues";
 
