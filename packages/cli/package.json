@@ -1,6 +1,6 @@
 {
   "name": "@ionic/angular-standalone-codemods",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "dependencies": {
     "@angular-eslint/template-parser": "^16.1.2",
     "@clack/core": "^0.3.3",
@@ -10,9 +10,12 @@
     "ts-morph": "^19.0.0"
   },
   "bin": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "start": "jiti ./src/index.ts",
-    "build": "tsup src/index.ts --format cjs,esm --dts && cp ../../README.md dist/",
+    "build": "tsup src/index.ts --format cjs,esm --dts && cp ../../README.md ./",
     "watch": "pnpm run build --watch",
     "dev": "pnpm run build --watch",
     "test": "vitest run",
