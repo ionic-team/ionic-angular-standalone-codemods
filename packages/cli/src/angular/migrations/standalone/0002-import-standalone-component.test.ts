@@ -200,7 +200,7 @@ describe("migrateComponents", () => {
               imports: [IonRouterLinkWithHref]
           })
           export class MyComponent { }
-        `)
+        `),
         );
       });
 
@@ -236,7 +236,7 @@ describe("migrateComponents", () => {
               imports: [IonRouterLinkWithHref]
           })
           export class MyComponent { }
-        `)
+        `),
         );
       });
 
@@ -272,7 +272,7 @@ describe("migrateComponents", () => {
             imports: [IonRouterLinkWithHref]
         })
         export class MyComponent { }
-      `)
+      `),
         );
       });
     });
@@ -312,7 +312,7 @@ describe("migrateComponents", () => {
               imports: [IonRouterLink, IonButton]
           })
           export class MyComponent { }
-        `)
+        `),
         );
       });
 
@@ -350,7 +350,7 @@ describe("migrateComponents", () => {
               imports: [IonRouterLink, IonButton]
           })
           export class MyComponent { }
-        `)
+        `),
         );
       });
 
@@ -388,11 +388,10 @@ describe("migrateComponents", () => {
             imports: [IonRouterLink, IonButton]
         })
         export class MyComponent { }
-      `)
+      `),
         );
       });
-    })
-
+    });
   });
 
   describe("single component angular modules", () => {

@@ -39,8 +39,13 @@ export const migrateComponents = async (
     if (sourceFile.getFilePath().endsWith(".html")) {
       const htmlAsString = sourceFile.getFullText();
 
-      const { skippedIconsHtml, ionIcons, ionicComponents, hasRouterLink, hasRouterLinkWithHref } =
-        detectIonicComponentsAndIcons(htmlAsString, sourceFile.getFilePath());
+      const {
+        skippedIconsHtml,
+        ionIcons,
+        ionicComponents,
+        hasRouterLink,
+        hasRouterLinkWithHref,
+      } = detectIonicComponentsAndIcons(htmlAsString, sourceFile.getFilePath());
 
       if (ionicComponents.length > 0 || ionIcons.length > 0) {
         const tsSourceFile =
@@ -63,11 +68,16 @@ export const migrateComponents = async (
     } else if (sourceFile.getFilePath().endsWith(".ts")) {
       const templateAsString = getComponentTemplateAsString(sourceFile);
       if (templateAsString) {
-        const { skippedIconsHtml, ionIcons, ionicComponents, hasRouterLink, hasRouterLinkWithHref } =
-          detectIonicComponentsAndIcons(
-            templateAsString,
-            sourceFile.getFilePath(),
-          );
+        const {
+          skippedIconsHtml,
+          ionIcons,
+          ionicComponents,
+          hasRouterLink,
+          hasRouterLinkWithHref,
+        } = detectIonicComponentsAndIcons(
+          templateAsString,
+          sourceFile.getFilePath(),
+        );
 
         await migrateAngularComponentClass(
           sourceFile,
@@ -125,7 +135,11 @@ async function migrateAngularComponentClass(
   }
 
   if (hasRouterLinkWithHref) {
-    addImportToClass(sourceFile, "IonRouterLinkWithHref", "@ionic/angular/standalone");
+    addImportToClass(
+      sourceFile,
+      "IonRouterLinkWithHref",
+      "@ionic/angular/standalone",
+    );
     addImportToComponentDecorator(sourceFile, "IonRouterLinkWithHref");
   }
 
@@ -231,9 +245,13 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
           ionicComponents.push(node.name);
         }
 
-        const routerLink = node.attributes.find(
-          (a: any) => a.name === 'routerLink' || a.name == 'routerDirection' || a.name === 'routerAction'
-        ) !== undefined;
+        const routerLink =
+          node.attributes.find(
+            (a: any) =>
+              a.name === "routerLink" ||
+              a.name == "routerDirection" ||
+              a.name === "routerAction",
+          ) !== undefined;
 
         if (!hasRouterLink && routerLink) {
           hasRouterLink = true;
@@ -280,10 +298,14 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
         }
       }
 
-      if (node.name === 'a') {
-        const routerLinkWithHref = node.attributes.find(
-          (a: any) => a.name === 'routerLink' || a.name == 'routerDirection' || a.name === 'routerAction'
-        ) !== undefined;
+      if (node.name === "a") {
+        const routerLinkWithHref =
+          node.attributes.find(
+            (a: any) =>
+              a.name === "routerLink" ||
+              a.name == "routerDirection" ||
+              a.name === "routerAction",
+          ) !== undefined;
 
         if (!hasRouterLinkWithHref && routerLinkWithHref) {
           hasRouterLinkWithHref = true;

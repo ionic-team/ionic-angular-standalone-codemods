@@ -9,5 +9,5 @@ import { IonicModule } from '@ionic/angular';
   imports: [IonicModule],
 })
 export class RouterLinkPage {
-  constructor() { }
+  constructor() {}
 }
