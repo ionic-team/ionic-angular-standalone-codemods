@@ -39,7 +39,7 @@ export const migrateComponents = async (
     if (sourceFile.getFilePath().endsWith(".html")) {
       const htmlAsString = sourceFile.getFullText();
 
-      const { skippedIconsHtml, ionIcons, ionicComponents } =
+      const { skippedIconsHtml, ionIcons, ionicComponents, hasRouterLink, hasRouterLinkWithHref } =
         detectIonicComponentsAndIcons(htmlAsString, sourceFile.getFilePath());
 
       if (ionicComponents.length > 0 || ionIcons.length > 0) {
@@ -52,6 +52,8 @@ export const migrateComponents = async (
             ionicComponents,
             ionIcons,
             skippedIconsHtml,
+            hasRouterLink,
+            hasRouterLinkWithHref,
             cliOptions,
           );
 
@@ -61,7 +63,7 @@ export const migrateComponents = async (
     } else if (sourceFile.getFilePath().endsWith(".ts")) {
       const templateAsString = getComponentTemplateAsString(sourceFile);
       if (templateAsString) {
-        const { skippedIconsHtml, ionIcons, ionicComponents } =
+        const { skippedIconsHtml, ionIcons, ionicComponents, hasRouterLink, hasRouterLinkWithHref } =
           detectIonicComponentsAndIcons(
             templateAsString,
             sourceFile.getFilePath(),
@@ -72,6 +74,8 @@ export const migrateComponents = async (
           ionicComponents,
           ionIcons,
           skippedIconsHtml,
+          hasRouterLink,
+          hasRouterLinkWithHref,
           cliOptions,
         );
 
@@ -88,6 +92,8 @@ async function migrateAngularComponentClass(
   ionicComponents: string[],
   ionIcons: string[],
   skippedIconsHtml: string[],
+  hasRouterLink: boolean,
+  hasRouterLinkWithHref: boolean,
   cliOptions: CliOptions,
 ) {
   let ngModuleSourceFile: SourceFile | undefined;
@@ -111,6 +117,16 @@ async function migrateAngularComponentClass(
       sourceFile,
       ionIcons.map((i) => kebabCaseToCamelCase(i)),
     );
+  }
+
+  if (hasRouterLink) {
+    addImportToClass(sourceFile, "IonRouterLink", "@ionic/angular/standalone");
+    addImportToComponentDecorator(sourceFile, "IonRouterLink");
+  }
+
+  if (hasRouterLinkWithHref) {
+    addImportToClass(sourceFile, "IonRouterLinkWithHref", "@ionic/angular/standalone");
+    addImportToComponentDecorator(sourceFile, "IonRouterLinkWithHref");
   }
 
   for (const ionicComponent of ionicComponents) {
@@ -205,11 +221,22 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
   const ionIcons: string[] = [];
   const skippedIconsHtml: string[] = [];
 
+  let hasRouterLinkWithHref = false;
+  let hasRouterLink = false;
+
   const recursivelyFindIonicComponents = (node: any) => {
     if (node.type === "Element$1") {
       if (IONIC_COMPONENTS.includes(node.name)) {
         if (!ionicComponents.includes(node.name)) {
           ionicComponents.push(node.name);
+        }
+
+        const routerLink = node.attributes.find(
+          (a: any) => a.name === 'routerLink' || a.name == 'routerDirection' || a.name === 'routerAction'
+        ) !== undefined;
+
+        if (!hasRouterLink && routerLink) {
+          hasRouterLink = true;
         }
       }
 
@@ -253,6 +280,16 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
         }
       }
 
+      if (node.name === 'a') {
+        const routerLinkWithHref = node.attributes.find(
+          (a: any) => a.name === 'routerLink' || a.name == 'routerDirection' || a.name === 'routerAction'
+        ) !== undefined;
+
+        if (!hasRouterLinkWithHref && routerLinkWithHref) {
+          hasRouterLinkWithHref = true;
+        }
+      }
+
       if (node.children.length > 0) {
         for (const childNode of node.children) {
           recursivelyFindIonicComponents(childNode);
@@ -269,6 +306,8 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
     ionicComponents,
     ionIcons,
     skippedIconsHtml,
+    hasRouterLinkWithHref,
+    hasRouterLink,
   };
 }
 

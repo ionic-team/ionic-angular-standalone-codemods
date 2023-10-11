@@ -166,6 +166,233 @@ describe("migrateComponents", () => {
       `),
       );
     });
+
+    describe("hyperlinks", () => {
+      it("should detect and import routerLink used in the template", async () => {
+        const project = new Project({ useInMemoryFileSystem: true });
+        const component = `
+          import { Component } from "@angular/core";
+  
+          @Component({
+            selector: 'my-component',
+            template: '<a routerLink="/home">Home</a>',
+            standalone: true
+          }) 
+          export class MyComponent { }
+        `;
+
+        const componentSourceFile = project.createSourceFile(
+          "foo.component.ts",
+          dedent(component),
+        );
+
+        await migrateComponents(project, { dryRun: false });
+
+        expect(dedent(componentSourceFile.getText())).toBe(
+          dedent(`
+          import { Component } from "@angular/core";
+          import { IonRouterLinkWithHref } from "@ionic/angular/standalone";
+
+          @Component({
+              selector: 'my-component',
+              template: '<a routerLink="/home">Home</a>',
+              standalone: true,
+              imports: [IonRouterLinkWithHref]
+          })
+          export class MyComponent { }
+        `)
+        );
+      });
+
+      it("should detect and import routerAction used in the template", async () => {
+        const project = new Project({ useInMemoryFileSystem: true });
+        const component = `
+          import { Component } from "@angular/core";
+  
+          @Component({
+            selector: 'my-component',
+            template: '<a routerAction="push">Home</a>',
+            standalone: true
+          }) 
+          export class MyComponent { }
+        `;
+
+        const componentSourceFile = project.createSourceFile(
+          "foo.component.ts",
+          dedent(component),
+        );
+
+        await migrateComponents(project, { dryRun: false });
+
+        expect(dedent(componentSourceFile.getText())).toBe(
+          dedent(`
+          import { Component } from "@angular/core";
+          import { IonRouterLinkWithHref } from "@ionic/angular/standalone";
+
+          @Component({
+              selector: 'my-component',
+              template: '<a routerAction="push">Home</a>',
+              standalone: true,
+              imports: [IonRouterLinkWithHref]
+          })
+          export class MyComponent { }
+        `)
+        );
+      });
+
+      it("should detect and import routerDirection used in the template", async () => {
+        const project = new Project({ useInMemoryFileSystem: true });
+        const component = `
+        import { Component } from "@angular/core";
+
+        @Component({
+          selector: 'my-component',
+          template: '<a routerDirection="forward">Home</a>',
+          standalone: true
+        }) 
+        export class MyComponent { }
+      `;
+
+        const componentSourceFile = project.createSourceFile(
+          "foo.component.ts",
+          dedent(component),
+        );
+
+        await migrateComponents(project, { dryRun: false });
+
+        expect(dedent(componentSourceFile.getText())).toBe(
+          dedent(`
+        import { Component } from "@angular/core";
+        import { IonRouterLinkWithHref } from "@ionic/angular/standalone";
+
+        @Component({
+            selector: 'my-component',
+            template: '<a routerDirection="forward">Home</a>',
+            standalone: true,
+            imports: [IonRouterLinkWithHref]
+        })
+        export class MyComponent { }
+      `)
+        );
+      });
+    });
+
+    describe("Ionic components", () => {
+      it("should detect and import routerLink used in the template", async () => {
+        const project = new Project({ useInMemoryFileSystem: true });
+        const component = `
+          import { Component } from "@angular/core";
+          import { IonicModule } from "@ionic/angular";
+  
+          @Component({
+            selector: 'my-component',
+            template: '<ion-button routerLink="/home">Home</ion-button>',
+            standalone: true,
+            imports: [IonicModule]
+          }) 
+          export class MyComponent { }
+        `;
+
+        const componentSourceFile = project.createSourceFile(
+          "foo.component.ts",
+          dedent(component),
+        );
+
+        await migrateComponents(project, { dryRun: false });
+
+        expect(dedent(componentSourceFile.getText())).toBe(
+          dedent(`
+          import { Component } from "@angular/core";
+          import { IonRouterLink, IonButton } from "@ionic/angular/standalone";
+
+          @Component({
+              selector: 'my-component',
+              template: '<ion-button routerLink="/home">Home</ion-button>',
+              standalone: true,
+              imports: [IonRouterLink, IonButton]
+          })
+          export class MyComponent { }
+        `)
+        );
+      });
+
+      it("should detect and import routerAction used in the template", async () => {
+        const project = new Project({ useInMemoryFileSystem: true });
+        const component = `
+          import { Component } from "@angular/core";
+          import { IonicModule } from "@ionic/angular";
+  
+          @Component({
+            selector: 'my-component',
+            template: '<ion-button routerAction="push">Home</ion-button>',
+            standalone: true,
+            imports: [IonicModule]
+          }) 
+          export class MyComponent { }
+        `;
+
+        const componentSourceFile = project.createSourceFile(
+          "foo.component.ts",
+          dedent(component),
+        );
+
+        await migrateComponents(project, { dryRun: false });
+
+        expect(dedent(componentSourceFile.getText())).toBe(
+          dedent(`
+          import { Component } from "@angular/core";
+          import { IonRouterLink, IonButton } from "@ionic/angular/standalone";
+
+          @Component({
+              selector: 'my-component',
+              template: '<ion-button routerAction="push">Home</ion-button>',
+              standalone: true,
+              imports: [IonRouterLink, IonButton]
+          })
+          export class MyComponent { }
+        `)
+        );
+      });
+
+      it("should detect and import routerDirection used in the template", async () => {
+        const project = new Project({ useInMemoryFileSystem: true });
+        const component = `
+        import { Component } from "@angular/core";
+        import { IonicModule } from "@ionic/angular";
+
+        @Component({
+          selector: 'my-component',
+          template: '<ion-button routerDirection="forward">Home</ion-button>',
+          standalone: true,
+          imports: [IonicModule]
+        }) 
+        export class MyComponent { }
+      `;
+
+        const componentSourceFile = project.createSourceFile(
+          "foo.component.ts",
+          dedent(component),
+        );
+
+        await migrateComponents(project, { dryRun: false });
+
+        expect(dedent(componentSourceFile.getText())).toBe(
+          dedent(`
+        import { Component } from "@angular/core";
+        import { IonRouterLink, IonButton } from "@ionic/angular/standalone";
+
+        @Component({
+            selector: 'my-component',
+            template: '<ion-button routerDirection="forward">Home</ion-button>',
+            standalone: true,
+            imports: [IonRouterLink, IonButton]
+        })
+        export class MyComponent { }
+      `)
+        );
+      });
+    })
+
   });
 
   describe("single component angular modules", () => {
