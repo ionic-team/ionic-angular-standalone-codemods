@@ -10,13 +10,10 @@ import { IonContent, IonicModule } from '@ionic/angular';
   imports: [IonicModule, CommonModule, FormsModule],
 })
 export class ViewChildPage implements OnInit {
-  /**
-   * Referencing the template's ion-content results in a double call.
-   */
   @ViewChild(IonContent)
   content!: IonContent;
 
-  constructor() {}
+  constructor() { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 }
