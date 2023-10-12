@@ -9,7 +9,7 @@
 </h1>
 
 <p align="center">
-Code mods to migrate an Ionic Angular application to use the new standalone components.
+Code mods to migrate an Ionic Angular application to use the new standalone components in Ionic Framework v7.5.0.
 </p>
 
 <p align="center">
@@ -40,8 +40,6 @@ Code mods to migrate an Ionic Angular application to use the new standalone comp
 > This project is experimental. Review all changes before committing them to your project.
 
 If you run into any issues while using this project, please open an issue on this repository. If you are unable to provide a reproduction project, please provide relevant code snippets to help us reproduce the issue.
-
-**This repository is in active development and is not intended for production use. Check back soon!**
 
 ## Usage
 
