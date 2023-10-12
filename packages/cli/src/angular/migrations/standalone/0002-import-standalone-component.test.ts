@@ -167,6 +167,49 @@ describe("migrateComponents", () => {
       );
     });
 
+    it("should remove duplicate imports from existing declarations", async () => {
+      const project = new Project({ useInMemoryFileSystem: true });
+
+      const component = `
+        import { Component, ViewChild } from "@angular/core";
+        import { IonContent, IonicModule } from "@ionic/angular";
+
+        @Component({
+          selector: 'my-component',
+          template: '<ion-content></ion-content>',
+          standalone: true,
+          imports: [IonicModule]
+        }) 
+        export class MyComponent {
+          @ViewChild(IonContent) content!: IonContent;
+        }
+      `;
+
+      const componentSourceFile = project.createSourceFile(
+        "foo.component.ts",
+        dedent(component),
+      );
+
+      await migrateComponents(project, { dryRun: false });
+
+      expect(dedent(componentSourceFile.getText())).toBe(
+        dedent(`
+        import { Component, ViewChild } from "@angular/core";
+        import { IonContent } from "@ionic/angular/standalone";
+
+        @Component({
+            selector: 'my-component',
+            template: '<ion-content></ion-content>',
+            standalone: true,
+            imports: [IonContent]
+        })
+        export class MyComponent {
+            @ViewChild(IonContent) content!: IonContent;
+        }
+      `),
+      );
+    });
+
     describe("hyperlinks", () => {
       it("should detect and import routerLink used in the template", async () => {
         const project = new Project({ useInMemoryFileSystem: true });
