@@ -7,7 +7,7 @@ import { IonContent, IonicModule } from '@ionic/angular';
   selector: 'app-view-child',
   templateUrl: './view-child.page.html',
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule]
+  imports: [IonicModule, CommonModule, FormsModule],
 })
 export class ViewChildPage implements OnInit {
   /**
@@ -16,7 +16,7 @@ export class ViewChildPage implements OnInit {
   @ViewChild(IonContent)
   content!: IonContent;
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() { }
+  ngOnInit() {}
 }
