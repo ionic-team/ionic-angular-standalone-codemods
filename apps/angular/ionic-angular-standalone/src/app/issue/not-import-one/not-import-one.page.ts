@@ -11,7 +11,9 @@ import { IonicModule } from '@ionic/angular';
   imports: [IonicModule, CommonModule, FormsModule]
 })
 export class NotImportOnePage implements OnInit {
-
+  isForce = false;
+  isLoading = false;
+  isSpinner = false;
   constructor() { }
 
   ngOnInit() {
