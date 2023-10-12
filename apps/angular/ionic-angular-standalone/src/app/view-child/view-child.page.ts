@@ -13,7 +13,7 @@ export class ViewChildPage implements OnInit {
   @ViewChild(IonContent)
   content!: IonContent;
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() { }
+  ngOnInit() {}
 }
