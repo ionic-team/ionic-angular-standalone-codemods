@@ -10,7 +10,7 @@ import {
   spinner,
 } from "@clack/prompts";
 import color from "picocolors";
-import { TERMINAL_INFO } from '@ionic/utils-terminal';
+import { TERMINAL_INFO } from "@ionic/utils-terminal";
 import { Project } from "ts-morph";
 import { existsSync } from "node:fs";
 
@@ -21,8 +21,7 @@ const IONIC_MIGRATION_GUIDE_URL =
   "https://www.ionicframework.com/docs/angular/build-options#migrating-from-modules-to-standalone";
 const IONIC_REPOSITORY_ISSUES_URL =
   "https://github.com/ionic-team/ionic-angular-standalone-codemods/issues";
-const isInteractive = (): boolean =>
-  TERMINAL_INFO.tty && !TERMINAL_INFO.ci;
+const isInteractive = (): boolean => TERMINAL_INFO.tty && !TERMINAL_INFO.ci;
 
 async function main() {
   console.clear();
@@ -43,23 +42,26 @@ async function main() {
   );
   log.warning("--------------------------------------------------");
 
-  const cli = isInteractive() ? await group({
-    dryRun: () =>
-      confirm({
-        message:
-          "Would you like to run this migration as a dry run? No changes will be written to your project.",
-        initialValue: true,
-      }),
-    dir: () =>
-      text({
-        message:
-          "Please enter the path to your project (default is the current working directory):",
-        initialValue: cwd(),
-      }),
-  }) : {
-    // If we are in a non-interactive terminal then use defaults
-    dryRun: false, dir: cwd()
-  };
+  const cli = isInteractive()
+    ? await group({
+        dryRun: () =>
+          confirm({
+            message:
+              "Would you like to run this migration as a dry run? No changes will be written to your project.",
+            initialValue: true,
+          }),
+        dir: () =>
+          text({
+            message:
+              "Please enter the path to your project (default is the current working directory):",
+            initialValue: cwd(),
+          }),
+      })
+    : {
+        // If we are in a non-interactive terminal then use defaults
+        dryRun: false,
+        dir: cwd(),
+      };
 
   if (typeof cli.dryRun !== "boolean") {
     // User aborted the prompt
