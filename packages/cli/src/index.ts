@@ -21,7 +21,7 @@ const IONIC_MIGRATION_GUIDE_URL =
   "https://www.ionicframework.com/docs/angular/build-options#migrating-from-modules-to-standalone";
 const IONIC_REPOSITORY_ISSUES_URL =
   "https://github.com/ionic-team/ionic-angular-standalone-codemods/issues";
-const isInteractive = (): boolean => (TERMINAL_INFO.tty && !TERMINAL_INFO.ci) || (process.argv.includes('--non-interactive'));
+const isInteractive = (): boolean => (TERMINAL_INFO.tty && !TERMINAL_INFO.ci) && (!process.argv.includes('--non-interactive'));
 
 async function main() {
   console.clear();
