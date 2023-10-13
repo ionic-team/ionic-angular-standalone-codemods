@@ -48,8 +48,8 @@ importers:
         specifier: ^16.0.0
         version: 16.0.0(@angular/common@16.0.0)(@angular/core@16.0.0)(@angular/platform-browser@16.0.0)(rxjs@7.8.1)
       '@ionic/angular':
-        specifier: ^7.0.0
-        version: 7.0.0(@angular/core@16.0.0)(@angular/forms@16.0.0)(@angular/router@16.0.0)(rxjs@7.8.1)(zone.js@0.13.0)
+        specifier: ^7.5.0
+        version: 7.5.0(@angular/core@16.0.0)(@angular/forms@16.0.0)(@angular/router@16.0.0)(rxjs@7.8.1)(zone.js@0.13.0)
       ionicons:
         specifier: ^7.0.0
         version: 7.0.0
@@ -139,8 +139,8 @@ importers:
         specifier: 5.0.6
         version: 5.0.6(@capacitor/core@5.4.0)
       '@ionic/angular':
-        specifier: ^7.0.0
-        version: 7.0.0(@angular/core@16.0.0)(@angular/forms@16.0.0)(@angular/router@16.0.0)(rxjs@7.8.1)(zone.js@0.13.0)
+        specifier: ^7.5.0
+        version: 7.5.0(@angular/core@16.0.0)(@angular/forms@16.0.0)(@angular/router@16.0.0)(rxjs@7.8.1)(zone.js@0.13.0)
       ionicons:
         specifier: ^7.0.0
         version: 7.0.0
@@ -253,6 +253,9 @@ importers:
       '@clack/prompts':
         specifier: ^0.7.0
         version: 0.7.0
+      '@ionic/utils-terminal':
+        specifier: ^2.3.4
+        version: 2.3.4
       picocolors:
         specifier: ^1.0.0
         version: 1.0.0
@@ -2788,8 +2791,8 @@ packages:
       - chokidar
     dev: true
 
-  /@ionic/angular@7.0.0(@angular/core@16.0.0)(@angular/forms@16.0.0)(@angular/router@16.0.0)(rxjs@7.8.1)(zone.js@0.13.0):
-    resolution: {integrity: sha512-vsSOPoWyO8Wl2EcUG9VJN50HsLG5B08q2mz/D6WAWeG0VlFGS2OdjtBOsFT3UKWuznuACxnTPNdUCk9JtFCgRw==}
+  /@ionic/angular@7.5.0(@angular/core@16.0.0)(@angular/forms@16.0.0)(@angular/router@16.0.0)(rxjs@7.8.1)(zone.js@0.13.0):
+    resolution: {integrity: sha512-0eZB/2/4ArfBt6YcYDF8VwfK0J8VRmywpbzlmsQXrubOAqd+Xaq2yYfLmzRfyrdKBhg7TyA+L6MyJ6w0Y7fbXA==}
     peerDependencies:
       '@angular/core': '>=14.0.0'
       '@angular/forms': '>=14.0.0'
@@ -2800,7 +2803,7 @@ packages:
       '@angular/core': 16.0.0(rxjs@7.8.1)(zone.js@0.13.0)
       '@angular/forms': 16.0.0(@angular/common@16.0.0)(@angular/core@16.0.0)(@angular/platform-browser@16.0.0)(rxjs@7.8.1)
       '@angular/router': 16.0.0(@angular/common@16.0.0)(@angular/core@16.0.0)(@angular/platform-browser@16.0.0)(rxjs@7.8.1)
-      '@ionic/core': 7.0.0
+      '@ionic/core': 7.5.0
       ionicons: 7.1.2
       jsonc-parser: 3.2.0
       rxjs: 7.8.1
@@ -2819,11 +2822,11 @@ packages:
       - supports-color
     dev: true
 
-  /@ionic/core@7.0.0:
-    resolution: {integrity: sha512-pM8qOaea9ZbqZbGnoIswaeeTiHJKNQ9ziSNHSILDpdd4FjpxZjOeMgNUdvYzh5rX9fA6hEM2wodg7McIWHgvZQ==}
+  /@ionic/core@7.5.0:
+    resolution: {integrity: sha512-oreRvbKj8VqqO9JraxR/n56GC6MHQtnJEmZf/EFuw5ZvDV8My91uNIzLkb4P9SvPL5NRr/Z0TFem28cgRf5YVA==}
     dependencies:
-      '@stencil/core': 3.4.2
-      ionicons: 7.1.2
+      '@stencil/core': 4.4.1
+      ionicons: 7.2.1
       tslib: 2.5.0
     dev: false
 
@@ -2914,7 +2917,6 @@ packages:
       wrap-ansi: 7.0.0
     transitivePeerDependencies:
       - supports-color
-    dev: true
 
   /@isaacs/cliui@8.0.2:
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
@@ -3321,9 +3323,9 @@ packages:
     hasBin: true
     dev: false
 
-  /@stencil/core@3.4.2:
-    resolution: {integrity: sha512-FAUhUVaakCy29nU2GwO/HQBRV1ihPRvncz3PUc8oR+UJLAxGabTmP8PLY7wvHfbw+Cvi4VXfJFTBvdfDu6iKPQ==}
-    engines: {node: '>=14.10.0', npm: '>=6.0.0'}
+  /@stencil/core@4.4.1:
+    resolution: {integrity: sha512-SirGcrb5yKHCn2BwdM7HGVXuvCdmwiXlVczEj8jJxQIm42CAUQCUECxtZidTzp+oZBZnWLnoAvfanchJsgkQzA==}
+    engines: {node: '>=16.0.0', npm: '>=7.10.0'}
     hasBin: true
     dev: false
 
@@ -3543,7 +3545,6 @@ packages:
 
   /@types/slice-ansi@4.0.0:
     resolution: {integrity: sha512-+OpjSaq85gvlZAYINyzKpLeiFkSC4EsC6IIiT6v6TLSU5k5U83fHGj9Lel8oKEXM0HqgrMVCjXPDPVICtxF7EQ==}
-    dev: true
 
   /@types/sockjs@0.3.33:
     resolution: {integrity: sha512-f0KEEe05NvUnat+boPTZ0dgaLZ4SfSouXUgv5noUiefG2ajgKjmETo9ZJyuqsl7dfl2aHlLJUiki6B4ZYldiiw==}
@@ -4511,7 +4512,6 @@ packages:
   /astral-regex@2.0.0:
     resolution: {integrity: sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==}
     engines: {node: '>=8'}
-    dev: true
 
   /async@3.2.4:
     resolution: {integrity: sha512-iAB+JbDEGXhyIUavoDl9WP/Jj106Kz9DEn1DPgYw5ruDn0e3Wgi3sKFm55sASdGBNOQB8F59d9qQ7deqrHA8wQ==}
@@ -5616,7 +5616,6 @@ packages:
 
   /emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
-    dev: true
 
   /emoji-regex@9.2.2:
     resolution: {integrity: sha512-L18DaJsXSUk2+42pv8mLs5jJT2hqFkFE4j21wOmgbUqsZ2hL72NsUU785g9RXgo3s0ZNgVl42TiHp3ZtOv/Vyg==}
@@ -7387,6 +7386,12 @@ packages:
       '@stencil/core': 2.22.3
     dev: false
 
+  /ionicons@7.2.1:
+    resolution: {integrity: sha512-2pvCM7DGVEtbbj48PJzQrCADCQrqjU1nUYX9l9PyEWz3ZfdnLdAouqwPxLdl8tbaF9cE7OZRSlyQD7oLOLnGoQ==}
+    dependencies:
+      '@stencil/core': 4.4.1
+    dev: false
+
   /ip@2.0.0:
     resolution: {integrity: sha512-WKa+XuLG1A1R0UWhl2+1XQSi+fZWMsYKffMZTTYsiZaUD8k2yDAj5atimTUD2TZkyCkNEeYE5NhFZmupOGtjYQ==}
     dev: true
@@ -7499,7 +7504,6 @@ packages:
   /is-fullwidth-code-point@3.0.0:
     resolution: {integrity: sha512-zymm5+u+sCsSWyD9qNaejV3DFvhCKclKdizYaJUuHA83RLjb7nSuGnddCHGv0hk+KY7BMAlsWeK4Ueg6EV6XQg==}
     engines: {node: '>=8'}
-    dev: true
 
   /is-generator-function@1.0.10:
     resolution: {integrity: sha512-jsEjy9l3yiXEQ+PsXdmBwEPcOxaXWLspKdplFUVI9vq1iZgIekeC0L167qeu86czQaxed3q/Uzuw0swL0irL8A==}
@@ -9288,6 +9292,7 @@ packages:
   /pify@4.0.1:
     resolution: {integrity: sha512-uB80kBFb/tfd68bVleG9T5GGsGPjJrLAUpR5PZIrhBnIaRTQRjqdJSsIKkOP6OAIFbj7GOrcudc5pNjZ+geV2g==}
     engines: {node: '>=6'}
+    requiresBuild: true
     dev: true
 
   /pirates@4.0.6:
@@ -9561,6 +9566,7 @@ packages:
 
   /prr@1.0.1:
     resolution: {integrity: sha512-yPw4Sng1gWghHQWj0B3ZggWUm4qVbPwPFcRG8KyxiU7J2OHFSoEHKS+EZ3fv5l1t9CyCiop6l/ZYeWbrgoQejw==}
+    requiresBuild: true
     dev: true
     optional: true
 
@@ -10174,7 +10180,6 @@ packages:
 
   /signal-exit@3.0.7:
     resolution: {integrity: sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==}
-    dev: true
 
   /signal-exit@4.1.0:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
@@ -10215,7 +10220,6 @@ packages:
       ansi-styles: 4.3.0
       astral-regex: 2.0.0
       is-fullwidth-code-point: 3.0.0
-    dev: true
 
   /smart-buffer@4.2.0:
     resolution: {integrity: sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==}
@@ -10449,7 +10453,6 @@ packages:
       emoji-regex: 8.0.0
       is-fullwidth-code-point: 3.0.0
       strip-ansi: 6.0.1
-    dev: true
 
   /string-width@5.1.2:
     resolution: {integrity: sha512-HnLOCR3vjcY8beoNLtcjZ5/nxn2afmME6lhrDrebokqMap+XbeW8n9TXpPDOqdGK5qcI3oT0GKTW6wC7EMiVqA==}
@@ -11168,7 +11171,6 @@ packages:
   /untildify@4.0.0:
     resolution: {integrity: sha512-KK8xQ1mkzZeg9inewmFVDNkg3l5LUhoq9kN6iWYB/CC9YMG8HA+c1Q8HwDe6dEX7kErrEVNVBO3fWsVq5iDgtw==}
     engines: {node: '>=8'}
-    dev: true
 
   /update-browserslist-db@1.0.11(browserslist@4.21.10):
     resolution: {integrity: sha512-dCwEFf0/oT85M1fHBg4F0jtLwJrutGoHSQXCh7u4o2t1drG+c0a9Flnqww6XUKSfQMPpJBRjU8d4RXB09qtvaA==}
@@ -11704,7 +11706,6 @@ packages:
       ansi-styles: 4.3.0
       string-width: 4.2.3
       strip-ansi: 6.0.1
-    dev: true
 
   /wrap-ansi@8.1.0:
     resolution: {integrity: sha512-si7QWI6zUMq56bESFvagtmzMdGOtoxfR+Sez11Mobfc7tm+VkUckk9bW2UeffTGVUbOksxmSw0AA2gs8g71NCQ==}

@@ -167,6 +167,128 @@ describe("migrateComponents", () => {
       );
     });
 
+    it("should remove duplicate imports from existing declarations", async () => {
+      const project = new Project({ useInMemoryFileSystem: true });
+
+      const component = `
+        import { Component, ViewChild } from "@angular/core";
+        import { IonContent, IonicModule } from "@ionic/angular";
+
+        @Component({
+          selector: 'my-component',
+          template: '<ion-content></ion-content>',
+          standalone: true,
+          imports: [IonicModule]
+        }) 
+        export class MyComponent {
+          @ViewChild(IonContent) content!: IonContent;
+        }
+      `;
+
+      const componentSourceFile = project.createSourceFile(
+        "foo.component.ts",
+        dedent(component),
+      );
+
+      await migrateComponents(project, { dryRun: false });
+
+      expect(dedent(componentSourceFile.getText())).toBe(
+        dedent(`
+        import { Component, ViewChild } from "@angular/core";
+        import { IonContent } from "@ionic/angular/standalone";
+
+        @Component({
+            selector: 'my-component',
+            template: '<ion-content></ion-content>',
+            standalone: true,
+            imports: [IonContent]
+        })
+        export class MyComponent {
+            @ViewChild(IonContent) content!: IonContent;
+        }
+      `),
+      );
+    });
+
+    it("should detect Ionic components within *ngIf expressions", () => {
+      const project = new Project({ useInMemoryFileSystem: true });
+
+      const component = `
+        import { Component } from "@angular/core";
+
+        @Component({
+          selector: 'my-component',
+          template: \`
+            <ion-header [translucent]="true">
+              <ion-toolbar>
+                <ion-title>*ngIf Usage</ion-title>
+              </ion-toolbar>
+            </ion-header>
+            <ion-content [fullscreen]="true">
+              <ion-header collapse="condense">
+                <ion-toolbar>
+                  <ion-title size="large">*ngIf Usage</ion-title>
+                  <ion-buttons *ngIf="isVisible">
+                    <ion-button>Toggle</ion-button>
+                  </ion-buttons>
+                </ion-toolbar>
+              </ion-header>
+              <div *ngIf="isVisible">
+                <ion-label>Visible</ion-label>
+              </div>
+            </ion-content>
+          \`,
+          standalone: true
+        })
+        export class MyComponent {
+          isVisible = true;
+        }
+      `;
+
+      const componentSourceFile = project.createSourceFile(
+        "foo.component.ts",
+        dedent(component),
+      );
+
+      migrateComponents(project, { dryRun: false });
+
+      expect(dedent(componentSourceFile.getText())).toBe(
+        dedent(`
+        import { Component } from "@angular/core";
+        import { IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonLabel } from "@ionic/angular/standalone";
+
+        @Component({
+            selector: 'my-component',
+            template: \`
+            <ion-header [translucent]="true">
+              <ion-toolbar>
+                <ion-title>*ngIf Usage</ion-title>
+              </ion-toolbar>
+            </ion-header>
+            <ion-content [fullscreen]="true">
+              <ion-header collapse="condense">
+                <ion-toolbar>
+                  <ion-title size="large">*ngIf Usage</ion-title>
+                  <ion-buttons *ngIf="isVisible">
+                    <ion-button>Toggle</ion-button>
+                  </ion-buttons>
+                </ion-toolbar>
+              </ion-header>
+              <div *ngIf="isVisible">
+                <ion-label>Visible</ion-label>
+              </div>
+            </ion-content>
+          \`,
+            standalone: true,
+            imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonLabel]
+        })
+        export class MyComponent {
+            isVisible = true;
+        }
+      `),
+      );
+    });
+
     describe("hyperlinks", () => {
       it("should detect and import routerLink used in the template", async () => {
         const project = new Project({ useInMemoryFileSystem: true });

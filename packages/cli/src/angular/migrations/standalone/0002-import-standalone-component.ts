@@ -154,6 +154,12 @@ async function migrateAngularComponentClass(
         componentClassName,
         "@ionic/angular/standalone",
       );
+      /**
+       * This removes the import from the class, if it is present.
+       * An example where it may exist is when the developer has
+       * a @ViewChild decorator that references an ionic component.
+       */
+      removeImportFromClass(sourceFile, componentClassName, "@ionic/angular");
     } else if (ngModuleSourceFile) {
       const componentClassName = kebabCaseToPascalCase(ionicComponent);
 
@@ -239,10 +245,12 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
   let hasRouterLink = false;
 
   const recursivelyFindIonicComponents = (node: any) => {
-    if (node.type === "Element$1") {
-      if (IONIC_COMPONENTS.includes(node.name)) {
-        if (!ionicComponents.includes(node.name)) {
-          ionicComponents.push(node.name);
+    if (node.type === "Element$1" || node.type === "Template") {
+      const tagName = node.type === "Template" ? node.tagName : node.name;
+
+      if (IONIC_COMPONENTS.includes(tagName)) {
+        if (!ionicComponents.includes(tagName)) {
+          ionicComponents.push(tagName);
         }
 
         const routerLink =
