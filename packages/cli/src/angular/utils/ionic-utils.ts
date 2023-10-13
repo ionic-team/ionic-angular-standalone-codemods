@@ -75,7 +75,7 @@ export const IONIC_COMPONENTS = [
   "ion-segment-button",
   "ion-select",
   "ion-select-option",
-  "ion-skeleton",
+  "ion-skeleton-text",
   "ion-spinner",
   "ion-split-pane",
   "ion-tab",
