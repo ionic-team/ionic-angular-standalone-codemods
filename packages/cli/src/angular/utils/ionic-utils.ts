@@ -70,6 +70,7 @@ export const IONIC_COMPONENTS = [
   "ion-router-outlet",
   "ion-route",
   "ion-route-redirect",
+  "ion-row",
   "ion-searchbar",
   "ion-segment",
   "ion-segment-button",
