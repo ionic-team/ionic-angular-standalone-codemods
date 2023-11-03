@@ -8,6 +8,7 @@ import { migrateAngularJsonAssets } from "./0005-migrate-angular-json-assets";
 
 import { group, confirm, log, spinner } from "@clack/prompts";
 import { getActualPackageVersion } from "../../utils/package-utils";
+import { migrateAngularAppConfig } from "./0006-migrate-angular-app-config";
 
 interface StandaloneMigrationOptions {
   /**
@@ -51,6 +52,8 @@ export const runStandaloneMigration = async ({
   await migrateImportStatements(project, cliOptions);
   // Migrate the assets array in angular.json
   await migrateAngularJsonAssets(project, cliOptions);
+  // Migrate angular projects with an app config
+  await migrateAngularAppConfig(project, cliOptions);
 
   spinner.stop(`Project migration at ${dir} completed successfully.`);
 
