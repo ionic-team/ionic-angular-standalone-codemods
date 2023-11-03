@@ -1,3 +1,5 @@
+import type { SourceFile } from "ts-morph";
+
 /**
  * List of Ionic components by tag name.
  */
@@ -91,3 +93,31 @@ export const IONIC_COMPONENTS = [
   "ion-toggle",
   "ion-title",
 ]; // TODO can we generate this from @ionic/core and import it here?
+
+export const migrateProvideIonicAngularImportDeclarations = (
+  sourceFile: SourceFile,
+) => {
+  const importDeclaration = sourceFile.getImportDeclaration("@ionic/angular");
+
+  if (!importDeclaration) {
+    // If the @ionic/angular import does not exist, then this is not an @ionic/angular application.
+    // This migration only applies to @ionic/angular applications.
+    return;
+  }
+
+  // Update the import statement to import from @ionic/angular/standalone
+  importDeclaration.setModuleSpecifier("@ionic/angular/standalone");
+
+  const namedImports = importDeclaration.getNamedImports();
+  const importSpecifier = namedImports.find(
+    (n) => n.getName() === "IonicModule",
+  );
+
+  if (importSpecifier) {
+    // Remove the IonicModule import specifier
+    importSpecifier.remove();
+  }
+
+  // Add the provideIonicAngular import specifier
+  importDeclaration.addNamedImport("provideIonicAngular");
+};
