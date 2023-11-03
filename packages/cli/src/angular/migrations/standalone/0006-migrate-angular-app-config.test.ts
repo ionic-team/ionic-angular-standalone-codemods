@@ -4,7 +4,7 @@ import { dedent } from "ts-dedent";
 
 import { migrateAngularAppConfig } from "./0006-migrate-angular-app-config";
 
-describe.only("migrateAngularAppConfig", () => {
+describe("migrateAngularAppConfig", () => {
   it("should migrate app.config.ts", async () => {
     const project = new Project({ useInMemoryFileSystem: true });
 
