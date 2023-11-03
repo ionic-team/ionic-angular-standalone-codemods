@@ -68,9 +68,17 @@ export const migrateBootstrapApplication = async (
       return;
     }
 
-    const importProvidersFromFunctionCall = providersArray.getFirstChildByKind(
-      SyntaxKind.CallExpression,
-    );
+    const importProvidersFromFunctionCall = providersArray
+      .getChildrenOfKind(SyntaxKind.CallExpression)
+      .find((callExpression) => {
+        const identifier = callExpression.getFirstChildByKind(
+          SyntaxKind.Identifier,
+        );
+        return (
+          identifier !== undefined &&
+          identifier.getText() === "importProvidersFrom"
+        );
+      });
 
     if (importProvidersFromFunctionCall === undefined) {
       return;
