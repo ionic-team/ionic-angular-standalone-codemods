@@ -98,7 +98,7 @@ async function main() {
     });
   } catch (e: any) {
     s.stop("An error occurred during the migration.", 1);
-    log.error(e.message);
+    log.error(e.stack);
   }
 
   outro(

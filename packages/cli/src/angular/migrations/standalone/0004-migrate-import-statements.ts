@@ -10,6 +10,10 @@ export const migrateImportStatements = async (
 ) => {
   // Get all typescript source files in the project and update any @ionic/angular imports to @ionic/angular/standalone
   for (const sourceFile of project.getSourceFiles()) {
+    if (!sourceFile.getFilePath().endsWith(".ts")) {
+      continue;
+    }
+
     let hasChanges = false;
 
     const importDeclarations = sourceFile.getImportDeclarations();
