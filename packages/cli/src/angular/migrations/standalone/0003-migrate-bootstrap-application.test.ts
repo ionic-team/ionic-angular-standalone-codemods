@@ -60,4 +60,60 @@ describe("migrateBootstrapApplication", () => {
     `),
     );
   });
+
+  it("order of providers should not impact migration", async () => {
+    const project = new Project({ useInMemoryFileSystem: true });
+
+    const main = dedent(`
+    import { enableProdMode, importProvidersFrom } from '@angular/core';
+    import { bootstrapApplication } from '@angular/platform-browser';
+    import { RouteReuseStrategy, provideRouter } from '@angular/router';
+    import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+
+    import { routes } from './app/app.routes';
+    import { AppComponent } from './app/app.component';
+    import { environment } from './environments/environment';
+
+    if (environment.production) {
+      enableProdMode();
+    }
+
+    bootstrapApplication(AppComponent, {
+      providers: [
+        { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+        provideRouter(routes),
+        importProvidersFrom(IonicModule.forRoot({ mode: 'ios' })),
+      ],
+    });
+    `);
+
+    const mainSourceFile = project.createSourceFile("src/main.ts", main);
+
+    await migrateBootstrapApplication(project, { dryRun: false });
+
+    expect(dedent(mainSourceFile.getText())).toBe(
+      dedent(`
+    import { enableProdMode, importProvidersFrom } from '@angular/core';
+    import { bootstrapApplication } from '@angular/platform-browser';
+    import { RouteReuseStrategy, provideRouter } from '@angular/router';
+    import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
+
+    import { routes } from './app/app.routes';
+    import { AppComponent } from './app/app.component';
+    import { environment } from './environments/environment';
+
+    if (environment.production) {
+        enableProdMode();
+    }
+
+    bootstrapApplication(AppComponent, {
+        providers: [
+            { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+            provideRouter(routes),
+            provideIonicAngular({ mode: 'ios' })
+        ],
+    });
+    `),
+    );
+  });
 });

@@ -1,7 +1,8 @@
-import type { ObjectLiteralExpression, Project, SourceFile } from "ts-morph";
+import type { ObjectLiteralExpression, Project } from "ts-morph";
 import { SyntaxKind } from "ts-morph";
 import type { CliOptions } from "../../../types/cli-options";
 import { saveFileChanges } from "../../utils/log-utils";
+import { migrateProvideIonicAngularImportDeclarations } from "../../utils/ionic-utils";
 
 export const migrateBootstrapApplication = async (
   project: Project,
@@ -67,9 +68,17 @@ export const migrateBootstrapApplication = async (
       return;
     }
 
-    const importProvidersFromFunctionCall = providersArray.getFirstChildByKind(
-      SyntaxKind.CallExpression,
-    );
+    const importProvidersFromFunctionCall = providersArray
+      .getChildrenOfKind(SyntaxKind.CallExpression)
+      .find((callExpression) => {
+        const identifier = callExpression.getFirstChildByKind(
+          SyntaxKind.Identifier,
+        );
+        return (
+          identifier !== undefined &&
+          identifier.getText() === "importProvidersFrom"
+        );
+      });
 
     if (importProvidersFromFunctionCall === undefined) {
       return;
@@ -136,35 +145,9 @@ export const migrateBootstrapApplication = async (
 
       providersArray.formatText();
 
-      migrateIonicAngularImportDeclarations(sourceFile);
+      migrateProvideIonicAngularImportDeclarations(sourceFile);
 
       return await saveFileChanges(sourceFile, cliOptions);
     }
   }
 };
-
-function migrateIonicAngularImportDeclarations(sourceFile: SourceFile) {
-  const importDeclaration = sourceFile.getImportDeclaration("@ionic/angular");
-
-  if (!importDeclaration) {
-    // If the @ionic/angular import does not exist, then this is not an @ionic/angular application.
-    // This migration only applies to @ionic/angular applications.
-    return;
-  }
-
-  // Update the import statement to import from @ionic/angular/standalone
-  importDeclaration.setModuleSpecifier("@ionic/angular/standalone");
-
-  const namedImports = importDeclaration.getNamedImports();
-  const importSpecifier = namedImports.find(
-    (n) => n.getName() === "IonicModule",
-  );
-
-  if (importSpecifier) {
-    // Remove the IonicModule import specifier
-    importSpecifier.remove();
-  }
-
-  // Add the provideIonicAngular import specifier
-  importDeclaration.addNamedImport("provideIonicAngular");
-}

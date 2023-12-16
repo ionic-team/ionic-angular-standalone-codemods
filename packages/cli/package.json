@@ -1,6 +1,6 @@
 {
   "name": "@ionic/angular-standalone-codemods",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "dependencies": {
     "@angular-eslint/template-parser": "^16.1.2",
     "@clack/core": "^0.3.3",
