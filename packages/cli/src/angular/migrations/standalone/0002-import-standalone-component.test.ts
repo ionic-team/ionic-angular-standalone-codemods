@@ -167,6 +167,49 @@ describe("migrateComponents", () => {
       );
     });
 
+    it("should detect and import icons used in the template with new control flow", async () => {
+      const project = new Project({ useInMemoryFileSystem: true });
+
+      const component = `
+        import { Component } from "@angular/core";
+
+        @Component({
+          selector: 'my-component',
+          template: '@if(1 === 1){ <ion-icon name="logo-ionic"></ion-icon> }',
+          standalone: true
+        }) 
+        export class MyComponent { }
+      `;
+
+      const componentSourceFile = project.createSourceFile(
+        "foo.component.ts",
+        dedent(component),
+      );
+
+      await migrateComponents(project, { dryRun: false });
+
+      expect(dedent(componentSourceFile.getText())).toBe(
+        dedent(`
+        import { Component } from "@angular/core";
+        import { addIcons } from "ionicons";
+        import { logoIonic } from "ionicons/icons";
+        import { IonIcon } from "@ionic/angular/standalone";
+
+        @Component({
+            selector: 'my-component',
+            template: '@if(1 === 1){ <ion-icon name="logo-ionic"></ion-icon> }',
+            standalone: true,
+            imports: [IonIcon]
+        })
+        export class MyComponent {
+            constructor() {
+                addIcons({ logoIonic });
+            }
+        }
+      `),
+      );
+    });
+
     it("should remove duplicate imports from existing declarations", async () => {
       const project = new Project({ useInMemoryFileSystem: true });
 

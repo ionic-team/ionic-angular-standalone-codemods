@@ -325,6 +325,12 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
           recursivelyFindIonicComponents(childNode);
         }
       }
+    } else if (node.type === "IfBlock") {
+      for (const branch of node.branches) {
+        for (const childNode of branch.children) {
+          recursivelyFindIonicComponents(childNode);
+        }
+      }
     }
   };
 
