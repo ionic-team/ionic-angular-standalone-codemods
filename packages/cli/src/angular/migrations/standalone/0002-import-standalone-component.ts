@@ -331,6 +331,35 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
           recursivelyFindIonicComponents(childNode);
         }
       }
+    } else if (node.type === "ForLoopBlock") {
+      console.log(node)
+      for (const childNode of node.children) {
+        recursivelyFindIonicComponents(childNode);
+      }
+    } else if (node.type === "SwitchBlock") {
+      console.log(node);
+      for (const c of node.cases) {
+        for (const childNode of c.children) {
+          recursivelyFindIonicComponents(childNode);
+        }
+      }
+    } else if (node.type === "DeferredBlock") {
+      if (node.children) {
+        for (const childNode of node.children) {
+          console.log(childNode);
+          recursivelyFindIonicComponents(childNode);
+        }
+      }
+
+      for (const childKey of Object.keys(node)) {
+        if (node[childKey]?.children) {
+          for (const childNode of node[childKey].children) {
+            recursivelyFindIonicComponents(Object.assign(childNode, {
+              type: childNode.constructor.name
+            }));
+          }
+        }
+      }
     }
   };
 

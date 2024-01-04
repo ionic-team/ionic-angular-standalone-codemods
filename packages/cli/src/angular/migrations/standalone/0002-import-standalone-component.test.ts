@@ -167,49 +167,6 @@ describe("migrateComponents", () => {
       );
     });
 
-    it("should detect and import icons used in the template with new control flow", async () => {
-      const project = new Project({ useInMemoryFileSystem: true });
-
-      const component = `
-        import { Component } from "@angular/core";
-
-        @Component({
-          selector: 'my-component',
-          template: '@if(1 === 1){ <ion-icon name="logo-ionic"></ion-icon> }',
-          standalone: true
-        }) 
-        export class MyComponent { }
-      `;
-
-      const componentSourceFile = project.createSourceFile(
-        "foo.component.ts",
-        dedent(component),
-      );
-
-      await migrateComponents(project, { dryRun: false });
-
-      expect(dedent(componentSourceFile.getText())).toBe(
-        dedent(`
-        import { Component } from "@angular/core";
-        import { addIcons } from "ionicons";
-        import { logoIonic } from "ionicons/icons";
-        import { IonIcon } from "@ionic/angular/standalone";
-
-        @Component({
-            selector: 'my-component',
-            template: '@if(1 === 1){ <ion-icon name="logo-ionic"></ion-icon> }',
-            standalone: true,
-            imports: [IonIcon]
-        })
-        export class MyComponent {
-            constructor() {
-                addIcons({ logoIonic });
-            }
-        }
-      `),
-      );
-    });
-
     it("should remove duplicate imports from existing declarations", async () => {
       const project = new Project({ useInMemoryFileSystem: true });
 
@@ -621,5 +578,104 @@ describe("migrateComponents", () => {
       `),
       );
     });
+  });
+
+  it("should migrate components using inline templates with control flow", async () => {
+    const project = new Project({ useInMemoryFileSystem: true });
+
+    const component = `
+        import { Component } from "@angular/core";
+
+        @Component({
+          selector: 'my-component',
+          template: \`
+            <ion-header>
+              <ion-toolbar>
+                <ion-title>My Component</ion-title>
+              </ion-toolbar>
+            </ion-header>
+            <ion-content>
+              @defer {
+              <ion-list>
+                @for (item of [0, 1, 2]; track item) {
+                <ion-item>
+                  @if (1 === 1){ <ion-icon name="logo-ionic" slot="start"></ion-icon> }
+                  @switch (flag) {
+                    @case(0) {
+                      <ion-label>My Item</ion-label>
+                    }
+                    @default {
+                      <ion-label>Your Item</ion-label>
+                    }
+                  }
+                </ion-item>
+                }
+              </ion-list>
+              } @loading (after 100ms; minimum 1s) {
+              <ion-icon name="reload-outline" slot="start"></ion-icon>
+              }
+            </ion-content>
+          \`,
+          standalone: true
+        }) 
+        export class MyComponent { flag = 1 }
+      `;
+
+    const componentSourceFile = project.createSourceFile(
+      "foo.component.ts",
+      dedent(component),
+    );
+
+    await migrateComponents(project, { dryRun: false });
+
+    expect(dedent(componentSourceFile.getText())).toBe(
+      dedent(`
+        import { Component } from "@angular/core";
+        import { addIcons } from "ionicons";
+        import { logoIonic, reloadOutline } from "ionicons/icons";
+        import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonIcon, IonLabel } from "@ionic/angular/standalone";
+
+        @Component({
+            selector: 'my-component',
+            template: \`
+            <ion-header>
+              <ion-toolbar>
+                <ion-title>My Component</ion-title>
+              </ion-toolbar>
+            </ion-header>
+            <ion-content>
+              @defer {
+              <ion-list>
+                @for (item of [0, 1, 2]; track item) {
+                <ion-item>
+                  @if (1 === 1){ <ion-icon name="logo-ionic" slot="start"></ion-icon> }
+                  @switch (flag) {
+                    @case(0) {
+                      <ion-label>My Item</ion-label>
+                    }
+                    @default {
+                      <ion-label>Your Item</ion-label>
+                    }
+                  }
+                </ion-item>
+                }
+              </ion-list>
+              } @loading (after 100ms; minimum 1s) {
+              <ion-icon name="reload-outline" slot="start"></ion-icon>
+              }
+            </ion-content>
+          \`,
+            standalone: true,
+            imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonIcon, IonLabel]
+        })
+        export class MyComponent {
+            flag = 1
+
+            constructor() {
+                addIcons({ logoIonic, reloadOutline });
+            }
+        }
+      `),
+    );
   });
 });
