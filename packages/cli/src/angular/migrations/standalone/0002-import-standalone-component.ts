@@ -351,9 +351,11 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
       for (const childKey of Object.keys(node)) {
         if (node[childKey]?.children) {
           for (const childNode of node[childKey].children) {
-            recursivelyFindIonicComponents(Object.assign(childNode, {
-              type: childNode.constructor.name
-            }));
+            recursivelyFindIonicComponents(
+              Object.assign(childNode, {
+                type: childNode.constructor.name,
+              }),
+            );
           }
         }
       }
