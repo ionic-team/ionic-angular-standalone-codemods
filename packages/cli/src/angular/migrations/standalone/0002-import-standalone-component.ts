@@ -332,12 +332,10 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
         }
       }
     } else if (node.type === "ForLoopBlock") {
-      console.log(node)
       for (const childNode of node.children) {
         recursivelyFindIonicComponents(childNode);
       }
     } else if (node.type === "SwitchBlock") {
-      console.log(node);
       for (const c of node.cases) {
         for (const childNode of c.children) {
           recursivelyFindIonicComponents(childNode);
@@ -346,7 +344,6 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
     } else if (node.type === "DeferredBlock") {
       if (node.children) {
         for (const childNode of node.children) {
-          console.log(childNode);
           recursivelyFindIonicComponents(childNode);
         }
       }
