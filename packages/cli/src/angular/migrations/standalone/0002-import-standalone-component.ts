@@ -292,10 +292,38 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
              */
             const iconNameMatch = skippedIcon.match(iconNameRegex);
 
+            const deepGetIconConditional = (
+              ast: typeof boundNameAttribute.value.ast,
+              icons: string[],
+            ): string[] => {
+              if (ast.trueExp.type === "LiteralPrimitive") {
+                if (!ionIcons.includes(ast.trueExp.value)) {
+                  ionIcons.push(ast.trueExp.value);
+                }
+              } else if (ast.trueExp.type === "Conditional") {
+                deepGetIconConditional(ast.trueExp, icons);
+              } else {
+                skippedIconsHtml.push(skippedIcon);
+              }
+
+              if (ast.falseExp.type === "LiteralPrimitive") {
+                if (!ionIcons.includes(ast.falseExp.value)) {
+                  ionIcons.push(ast.falseExp.value);
+                }
+              } else if (ast.falseExp.type === "Conditional") {
+                deepGetIconConditional(ast.falseExp, icons);
+              } else {
+                skippedIconsHtml.push(skippedIcon);
+              }
+              return icons;
+            };
+
             if (iconNameMatch) {
               if (!ionIcons.includes(iconNameMatch[1])) {
                 ionIcons.push(iconNameMatch[1]);
               }
+            } else if (boundNameAttribute.value.ast.type === "Conditional") {
+              deepGetIconConditional(boundNameAttribute.value.ast, ionIcons);
             } else {
               // IonIcon name is a calculated value from a variable or function.
               // We can't determine the value of the name at this time.
