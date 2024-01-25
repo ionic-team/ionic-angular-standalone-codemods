@@ -96,9 +96,10 @@ async function main() {
       dir: cli.dir,
       spinner: s,
     });
-  } catch (e: any) {
+  } catch (e) {
     s.stop("An error occurred during the migration.", 1);
-    log.error(e.message);
+    const error = e as Error;
+    log.error(error.stack ?? error.message);
   }
 
   outro(
