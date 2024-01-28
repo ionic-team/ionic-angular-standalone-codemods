@@ -268,7 +268,9 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
 
       if (node.name === "ion-icon") {
         for (const attribute of ["name", "icon", "ios", "md"]) {
-          const staticNameAttribute = node.attributes.find((a: any) => a.name === attribute);
+          const staticNameAttribute = node.attributes.find(
+            (a: any) => a.name === attribute,
+          );
 
           if (staticNameAttribute) {
             const iconName = staticNameAttribute.value;
@@ -276,7 +278,9 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
               ionIcons.push(iconName);
             }
           } else {
-            const boundNameAttribute = node.inputs.find((a: any) => a.name === attribute);
+            const boundNameAttribute = node.inputs.find(
+              (a: any) => a.name === attribute,
+            );
 
             if (boundNameAttribute) {
               const skippedIcon = node.sourceSpan.toString();
