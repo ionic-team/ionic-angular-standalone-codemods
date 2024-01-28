@@ -116,4 +116,65 @@ describe("migrateBootstrapApplication", () => {
     `),
     );
   });
+
+  it("should migrate IonicModule.forRoot without explicit config", async () => {
+    const project = new Project({ useInMemoryFileSystem: true });
+
+    const main = dedent(`
+    import { enableProdMode, importProvidersFrom } from '@angular/core';
+    import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+
+
+    import { environment } from './environments/environment';
+    import { AppComponent } from './app/app.component';
+    import { AppRoutingModule } from './app/app-routing.module';
+    import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
+    import { IonicRouteStrategy, IonicModule } from '@ionic/angular';
+    import { RouteReuseStrategy } from '@angular/router';
+
+    if (environment.production) {
+      enableProdMode();
+    }
+
+    bootstrapApplication(AppComponent, {
+        providers: [
+            importProvidersFrom(BrowserModule, IonicModule.forRoot(), AppRoutingModule),
+            { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+        ]
+    })
+      .catch(err => console.log(err));
+    `);
+
+    const mainSourceFile = project.createSourceFile("src/main.ts", main);
+
+    await migrateBootstrapApplication(project, { dryRun: false });
+
+    expect(dedent(mainSourceFile.getText())).toBe(
+      dedent(`
+      import { enableProdMode, importProvidersFrom } from '@angular/core';
+      import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+      
+      
+      import { environment } from './environments/environment';
+      import { AppComponent } from './app/app.component';
+      import { AppRoutingModule } from './app/app-routing.module';
+      import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
+      import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
+      import { RouteReuseStrategy } from '@angular/router';
+      
+      if (environment.production) {
+          enableProdMode();
+      }
+      
+      bootstrapApplication(AppComponent, {
+          providers: [
+              importProvidersFrom(BrowserModule, AppRoutingModule),
+              { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+              provideIonicAngular({})
+          ]
+      })
+          .catch(err => console.log(err));
+      `),
+    );
+  });
 });

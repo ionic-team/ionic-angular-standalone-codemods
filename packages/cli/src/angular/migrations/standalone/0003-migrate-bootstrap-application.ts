@@ -129,9 +129,9 @@ export const migrateBootstrapApplication = async (
       const ionicConfigObjectLiteralExpression =
         importProvidersFromFunctionCallIonicModuleForRootCallExpressionArguments[0];
 
-      providersArray.addElement(
-        `provideIonicAngular(${ionicConfigObjectLiteralExpression.getText()})`,
-      );
+      const ionicConfig = ionicConfigObjectLiteralExpression?.getText() ?? "{}";
+
+      providersArray.addElement(`provideIonicAngular(${ionicConfig})`);
 
       // Remove the IonicModule.forRoot from the importProvidersFrom function call.
       importProvidersFromFunctionCall.removeArgument(
