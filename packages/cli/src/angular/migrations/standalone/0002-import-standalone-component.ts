@@ -267,68 +267,70 @@ function detectIonicComponentsAndIcons(htmlAsString: string, filePath: string) {
       }
 
       if (node.name === "ion-icon") {
-        const staticNameAttribute = node.attributes.find(
-          (a: any) => a.name === "name" || a.name === "icon",
-        );
-
-        if (staticNameAttribute) {
-          const iconName = staticNameAttribute.value;
-          if (!ionIcons.includes(iconName)) {
-            ionIcons.push(iconName);
-          }
-        } else {
-          const boundNameAttribute = node.inputs.find(
-            (a: any) => a.name === "name" || a.name === "icon",
+        for (const attribute of ["name", "icon", "ios", "md"]) {
+          const staticNameAttribute = node.attributes.find(
+            (a: any) => a.name === attribute,
           );
 
-          if (boundNameAttribute) {
-            const skippedIcon = node.sourceSpan.toString();
+          if (staticNameAttribute) {
+            const iconName = staticNameAttribute.value;
+            if (!ionIcons.includes(iconName)) {
+              ionIcons.push(iconName);
+            }
+          } else {
+            const boundNameAttribute = node.inputs.find(
+              (a: any) => a.name === attribute,
+            );
 
-            const iconNameRegex = /{{\s*'([^']+)'\s*}}/;
-            /**
-             * Attempt to find the icon name from the bound name attribute
-             * when the developer has a template like this:
-             * <ion-icon name="'user'"></ion-icon>
-             */
-            const iconNameMatch = skippedIcon.match(iconNameRegex);
+            if (boundNameAttribute) {
+              const skippedIcon = node.sourceSpan.toString();
 
-            const deepGetIconConditional = (
-              ast: typeof boundNameAttribute.value.ast,
-              icons: string[],
-            ): string[] => {
-              if (ast.trueExp.type === "LiteralPrimitive") {
-                if (!ionIcons.includes(ast.trueExp.value)) {
-                  ionIcons.push(ast.trueExp.value);
+              const iconNameRegex = /{{\s*'([^']+)'\s*}}/;
+              /**
+               * Attempt to find the icon name from the bound name attribute
+               * when the developer has a template like this:
+               * <ion-icon name="'user'"></ion-icon>
+               */
+              const iconNameMatch = skippedIcon.match(iconNameRegex);
+
+              const deepGetIconConditional = (
+                ast: typeof boundNameAttribute.value.ast,
+                icons: string[],
+              ): string[] => {
+                if (ast.trueExp.type === "LiteralPrimitive") {
+                  if (!ionIcons.includes(ast.trueExp.value)) {
+                    ionIcons.push(ast.trueExp.value);
+                  }
+                } else if (ast.trueExp.type === "Conditional") {
+                  deepGetIconConditional(ast.trueExp, icons);
+                } else {
+                  skippedIconsHtml.push(skippedIcon);
                 }
-              } else if (ast.trueExp.type === "Conditional") {
-                deepGetIconConditional(ast.trueExp, icons);
+
+                if (ast.falseExp.type === "LiteralPrimitive") {
+                  if (!ionIcons.includes(ast.falseExp.value)) {
+                    ionIcons.push(ast.falseExp.value);
+                  }
+                } else if (ast.falseExp.type === "Conditional") {
+                  deepGetIconConditional(ast.falseExp, icons);
+                } else {
+                  skippedIconsHtml.push(skippedIcon);
+                }
+                return icons;
+              };
+
+              if (iconNameMatch) {
+                if (!ionIcons.includes(iconNameMatch[1])) {
+                  ionIcons.push(iconNameMatch[1]);
+                }
+              } else if (boundNameAttribute.value.ast.type === "Conditional") {
+                deepGetIconConditional(boundNameAttribute.value.ast, ionIcons);
               } else {
+                // IonIcon name is a calculated value from a variable or function.
+                // We can't determine the value of the name at this time.
+                // The developer will need to manually import these icons.
                 skippedIconsHtml.push(skippedIcon);
               }
-
-              if (ast.falseExp.type === "LiteralPrimitive") {
-                if (!ionIcons.includes(ast.falseExp.value)) {
-                  ionIcons.push(ast.falseExp.value);
-                }
-              } else if (ast.falseExp.type === "Conditional") {
-                deepGetIconConditional(ast.falseExp, icons);
-              } else {
-                skippedIconsHtml.push(skippedIcon);
-              }
-              return icons;
-            };
-
-            if (iconNameMatch) {
-              if (!ionIcons.includes(iconNameMatch[1])) {
-                ionIcons.push(iconNameMatch[1]);
-              }
-            } else if (boundNameAttribute.value.ast.type === "Conditional") {
-              deepGetIconConditional(boundNameAttribute.value.ast, ionIcons);
-            } else {
-              // IonIcon name is a calculated value from a variable or function.
-              // We can't determine the value of the name at this time.
-              // The developer will need to manually import these icons.
-              skippedIconsHtml.push(skippedIcon);
             }
           }
         }

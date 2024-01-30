@@ -132,7 +132,7 @@ describe("migrateComponents", () => {
 
         @Component({
           selector: 'my-component',
-          template: '<ion-icon name="logo-ionic"></ion-icon>',
+          template: '<ion-icon name="logo-ionic" ios="add" md="remove"></ion-icon>',
           standalone: true
         }) 
         export class MyComponent { }
@@ -149,18 +149,18 @@ describe("migrateComponents", () => {
         dedent(`
         import { Component } from "@angular/core";
         import { addIcons } from "ionicons";
-        import { logoIonic } from "ionicons/icons";
+        import { logoIonic, add, remove } from "ionicons/icons";
         import { IonIcon } from "@ionic/angular/standalone";
 
         @Component({
             selector: 'my-component',
-            template: '<ion-icon name="logo-ionic"></ion-icon>',
+            template: '<ion-icon name="logo-ionic" ios="add" md="remove"></ion-icon>',
             standalone: true,
             imports: [IonIcon]
         })
         export class MyComponent {
             constructor() {
-                addIcons({ logoIonic });
+                addIcons({ logoIonic, add, remove });
             }
         }
       `),
