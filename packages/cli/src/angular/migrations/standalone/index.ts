@@ -116,7 +116,8 @@ async function checkInstalledIonicVersion(dir: string) {
       return false;
     }
 
-    if (minorVersion < 5) {
+    // only need to add if is major v7 then compare with minor 5.
+    if (majorVersion == 7 && minorVersion < 5) {
       logVersionError();
       return false;
     }
